@@ -1,0 +1,22 @@
+[user]
+	email = felipebarina+git@gmail.com
+	name = Felipe M Barina
+[core]
+	autocrlf = input
+[alias]
+	co=checkout
+	br=branch
+	s=status
+	st=status
+	cm=commit -m
+	com=commit -m
+	unstage=reset HEAD --
+	uncommit=reset --soft HEAD^
+	un=unstage
+	fa=fetch --all
+	last=log -1 HEAD
+	alias=! git config --get-regexp ^alias\\. \
+		| sed s/alias\\.// \
+		| column -t -l 2 -s ' '
+[init]
+	defaultBranch = master

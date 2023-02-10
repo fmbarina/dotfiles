@@ -1,0 +1,290 @@
+#!/usr/bin/env bash
+
+# Var -------------------------------------------------------------------------
+
+REPOURL="https://github.com/fmbarina/dotfiles.git" 
+
+[ -z "$DEV_HOME" ] && DEV_HOME="$(xdg-user-dir DOCUMENTS)/git"
+
+DOTFILES="$HOME/.dotfiles"
+LINK_DIR="$DOTFILES/link"
+COPY_DIR="$DOTFILES/copy"
+INIT_DIR="$DOTFILES/init"
+BKP_DIR="$DOTFILES/backup"
+
+log_file="$DOTFILES/dotfiles.log"
+
+sudop=              # sudo password
+declare -i sudof=0  # sudo fail counter
+declare -i sudol=1  # sudo failures allowed (will exit if greater than)
+
+# TODO: Might wanna learn how to use actual custom args
+log_enable=yes # ha ha yes to be fixed later
+
+# Functions -------------------------------------------------------------------
+
+# Some functions are in the dotfiles script so they can be used
+# without the needing to first clone the entire repository.
+
+### User feedback ###
+
+# Shamelessly st- borrowed from and altered cowboy/dotfiles/bin/dotfiles 
+
+# FIXME: this crapper echo system
+
+# Print formatted message - These are his, the rest is my fault
+e_header()    { echo -e  "\n\033[1m$1\033[0m"; }
+e_success()   { echo -e  " \033[1;32m✔\033[0m $1"; }
+e_error()     { echo -e  " \033[1;31m✖\033[0m $1"; }
+e_arrow()     { echo -e  " \033[1;34m➜\033[0m $1"; }
+# Reprint current line
+er_success()  { echo -e  " \033[2K\r \033[1;32m✔\033[0m $1"; }
+er_error()    { echo -e  " \033[2K\r \033[1;31m✖\033[0m $1"; }
+er_arrow()    { echo -e  " \033[2K\r \033[1;34m➜\033[0m $1"; }
+# Print without newline at the end
+en_success()  { echo -en " \033[1;32m✔\033[0m $1"; }
+en_error()    { echo -en " \033[1;31m✖\033[0m $1"; }
+en_arrow()    { echo -en " \033[1;34m➜\033[0m $1"; }
+# Reprint current line without newline at the end
+ern_success() { echo -en " \033[2K\r \033[1;32m✔\033[0m $1"; }
+ern_error()   { echo -en " \033[2K\r \033[1;31m✖\033[0m $1"; }
+ern_arrow()   { echo -en " \033[2K\r \033[1;34m➜\033[0m $1"; }
+
+e_erase()     { echo -en "\033[2K\r"; } # Erase current line
+
+### Logging ###
+
+log() {
+	if [ -n "$log_enable" ]; then
+		if [ -d "$(dirname "$log_file")" ]; then
+			echo -e "[$(date +%H:%M:%S)] - $1" >> "$log_file"; 
+		else
+			echo "WARNING: log location could not be used, logging disabled."
+			log_enable=
+		fi
+	fi
+}
+
+### Distro detection ###
+
+# This is not the most robust way to do this. Works fine, since it's all I use.
+
+is_fedora() {
+	[ -f /etc/fedora-release ]
+}
+
+is_ubuntu() {
+	[ -f /etc/lsb-release ]
+}
+
+# function is_arch(), one day...?
+
+is_known_distro() {
+	is_fedora || is_ubuntu
+}
+
+get_distro() {
+	is_fedora && echo "fedora"
+	is_ubuntu && echo "ubuntu"
+	echo "unknown" # ?
+}
+
+### sudo ###
+
+# Request sudo password if it's not already set
+# Separate from sudo_do because user might just not wanna allow sudo, but still 
+# want to run the commands. In such case, all calls to sudo_do will be skipped.
+sudo_req() {
+	e_header "Regarding dotfiles and sudo"
+	echo "This script will install many things and, as such, it will require"
+	echo "super user privileges. If you don't want to or can't provide those,"
+	echo "the script ends here for now."
+
+	if [ -z "$sudop" ]; then
+		echo ''
+		read -s -r -p "Type sudo password or stop by pressing enter: " sudop
+		echo ''
+		if [ -z "$sudop" ]; then
+			echo "No password provided. Stopping."
+			exit 1
+		else
+			echo "Password will be passed automatically in the future."
+		fi  
+	fi
+
+	sudo_do "touch /etc" 1> /dev/null 2>&1
+	echo ''
+}
+
+# This certainly isn't the best (or safest!) way to do this. Works for my case.
+# Execute sudo command without needing to ask password
+sudo_do() {
+	if [ -z "$sudop" ]; then
+		log "[sudo] No sudo password set, skipping: $1" 
+		return
+	fi
+		
+	log "[sudo] Executing: $1"
+
+	local output ; output=/dev/null
+	[ -n "$log_enabled" ] && output="$log_file"
+
+	# shellcheck disable=SC2086
+	# echo "$sudop" | sudo -S 1>>"$output" 2>&1 $1 && return 0 || return 1
+	echo "$sudop" | sudo -S $1 1>>"$output" 2>&1 && return 0 || return 1
+
+	log "[sudo] There has been a sudo error. ($?)"
+	sudof+=1
+
+	if (( sudof > sudol )); then
+		log "Too many errors ($sudof) trying to use sudo. Stopping."
+		abort 'Errors trying to use sudo, check your password. Stopping.'
+	fi
+
+	return 1
+}
+
+prompt_yn() {
+	while true; do
+		echo ''
+		read -n 1 -r -s -p "$1 [y/n] " yn
+		case $yn in
+			[Yy]*) return 0 ;;
+			[Nn]*) return 1 ;;
+		esac
+	done
+}
+
+abort() {
+	BLA::stop_loading_animation
+	tput cnorm # Show cursor
+	echo >&2 "Something went wrong or user interrupted. Stopping."
+	[ "$1" ] && echo >&2 "$1"
+	exit 1
+}
+
+# Run -------------------------------------------------------------------------
+
+# Call abort funtion on user interruption/error to avoid breaking the terminal
+trap abort SIGINT SIGTERM
+
+# Ask user input at the beginning, nobody wants to babysit a script
+sudo_req
+
+prompt_yn 'Upgrade all current installed packages?' && up_pkgs=yes
+
+tput civis # Hide cursor
+
+echo ''
+log "[dotfiles] Starting dotfiles..."
+e_header "Starting dotfiles"
+
+is_fedora && distro=fedora
+is_ubuntu && distro=ubuntu
+
+# Make sure we have git
+if ! [ -x "$(command -v git)" ]; then
+	log "[dotfiles] Installing git..."
+	en_arrow "Installing git"
+
+	if [ "$distro" = "fedora" ]; then
+		sudo_do "dnf install -qy git"
+	elif [ "$distro" = "ubuntu" ]; then
+		sudo_do "apt-get install -qy git"
+	else
+		e_error "Unknown distro, skipping git install"
+	fi
+
+	if ! [ -x "$(command -v git)" ]; then
+		log "[dotfiles] Failed to install git, aborting."
+		er_error "Failed to install git, aborting."
+		abort
+	fi
+fi
+er_success "Git installed"
+
+# Get updated repo
+if ! [ -e "$DOTFILES" ]; then
+	log "[dotfiles] Cloning dotfiles repository..."
+	en_arrow "Cloning repository"
+	git clone -q "$REPOURL" "$DOTFILES"
+else
+	log "[dotfiles] Updating dotfiles repository..."
+	en_arrow "Updating repository"
+	cd "$DOTFILES" || (echo 'Cd command failed trying to update repo'; exit)
+	git fetch -q --all 
+	git pull -q
+fi
+er_success "Repository up to date"
+
+# Source ----------------------------------------------------------------------
+
+# shellcheck source=../src/nodist.sh
+source "$DOTFILES/src/nodist.sh"
+
+# shellcheck source=../src/logic.sh
+source "$DOTFILES/src/logic.sh"
+
+# shellcheck source=/dev/null
+is_known_distro && source "$DOTFILES/src/distro/$distro.sh"
+
+# shellcheck source=../link/.common/env.sh
+source "$DOTFILES/link/.common/env.sh"
+
+# Run -------------------------------------------------------------------------
+
+# Symlink everything in the link directory to home
+shopt -s dotglob
+if [ "$(ls -A "$LINK_DIR")" ]; then
+	e_header "Symlinking"
+	for target in "$LINK_DIR"/*; do
+		symlink "$HOME/$(basename "$target")" "$target"
+		e_success "Symlinked $(basename "$target")"
+	done
+fi
+shopt -u dotglob
+
+# Copy everything in the copy directory to home
+shopt -s dotglob
+if [ "$(ls -A "$COPY_DIR")" ]; then
+	e_header "Copying"
+	for item in "$COPY_DIR"/*; do
+		copy "$item" "$HOME/"
+		e_success "Copied $(basename "$item")"
+	done
+fi
+shopt -u dotglob
+
+# Run init scripts
+if [ "$(ls "$INIT_DIR")" ]; then
+	e_header "Running init scripts"
+	if [ -n "$sudop"  ]; then
+		for script in "$INIT_DIR"/*; do
+			e_header "init/$(clean_initfile_name "$script")"
+			run_script "$script"
+		done	
+	else
+		e_arrow "Sudo password required. Skipped."
+		log "[dotfiles] User didn't provide sudo password, skipping init."
+	fi	
+fi
+
+# Cleanup
+
+log "[dotfiles] Dotfiles up to date! (hopefully)"
+e_header "Dotfiles up to date! (hopefully)"; 
+
+tput cnorm # Show cursor
+
+prompt_yn 'Reboot?' && sudo_do 'reboot'; echo ''; echo ''
+
+[ -n "$dotbkp" ] && echo "Check backed up file(s) in $DOTFILES/backup"
+
+if ! [ -e "$DOTFILES/installed" ]; then
+	echo ''
+	echo 'Since this is your first time running dotfiles...'
+	e_arrow 'A "installed" file has been created. To run dotfiles again as if for the first time, remove it before running dotfiles again.'
+	e_arrow 'You may need to restart your shell and/or system for some changes to take effect.'
+fi
+
+touch "$DOTFILES/installed"
