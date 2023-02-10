@@ -4,17 +4,17 @@
 alias pp="ncmpcpp"
 
 # "Custom" commands / Stuff I can't remember so I write it down
-alias filetypes='count_filetypes '
-alias scrape='scrape_url '
+alias filetypes='count_filetypes'
+alias scrape='scrape_url'
 
 # I have a hoarding problem
-alias bdfr='alias_bdfr '
-alias yt-dlp='alias_yt_dlp '
-alias gallery-dl='alias_gallery_dl '
+alias bdfr='alias_bdfr'
+alias yt-dlp='alias_yt_dlp'
+alias gallery-dl='alias_gallery_dl'
 
 # Trash
 alias tt='trash-put'
-alias rm="prompt_and_repeat 'Maybe try using trash-put (tt)' rm "
+alias rm="prompt_and_repeat 'Maybe try using trash-put (tt)' rm"
 
 # Classics
 alias cl='clear'
@@ -28,7 +28,7 @@ alias please='sudo'
 alias fucking='sudo'
 
 # Dumb crap for the dumb
-alias sshperm='mkdir -p ~/.ssh && chmod 700 ~/.ssh && chmod 600 ~/.ssh/id_rsa'
+alias sshperm='alias_sshperm'
 alias sshadd='ssh-add ~/.ssh/id_rsa'
 
 # Functions
@@ -122,4 +122,11 @@ alias_gallery_dl() {
 	gallery_dl_dir="$(xdg-user-dir DOWNLOAD)"/'0-gallery-dl'
 	mkdir -p "${gallery_dl_dir}"
 	\gallery-dl -d "${gallery_dl_dir}" "${@:1}"
+}
+
+alias_sshperm() {
+	mkdir -p ~/.ssh
+	chmod 700 ~/.ssh
+	[ -e ~/.ssh/id_rsa ] && chmod 600 ~/.ssh/id_rsa
+	[ -e ~/.ssh/config ] && chmod 644 ~/.ssh/config
 }
