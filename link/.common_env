@@ -1,0 +1,15 @@
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_CACHE_HOME="$HOME/.cache"
+export XDG_DATA_HOME="$HOME/.local/share"
+export XDG_STATE_HOME="$HOME/.local/state"
+
+export PATH="$HOME/.local/bin:$HOME/bin:$HOME/.dotfiles/bin:$PATH"
+export DOTFILES="$HOME/.dotfiles"
+
+export LESSHISTFILE="$XDG_STATE_HOME/less/history"
+export XAUTHORITY="$XDG_RUNTIME_DIR/Xauthority"
+
+export FZF_DEFAULT_COMMAND='fd --follow --hidden \
+  --exclude .git \
+  --exclude node_modules \
+  --exclude Trash'

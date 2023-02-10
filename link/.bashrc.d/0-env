@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+export HISTFILE="$HOME/.bashrc.d/.bash_history"

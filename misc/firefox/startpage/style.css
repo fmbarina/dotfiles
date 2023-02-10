@@ -1,0 +1,187 @@
+:root {
+    --bg-color-light: #d7d7d7;
+    --fg-color-light: #f1f1f1;
+    --txt-color-std-light: #848484;
+    --txt-color-hli-light: #ffae00;
+    --txt-color-lin-light: #4e4e4e;
+    --cursor-color-light: #ffae00;
+    --bg-color-dark: #1a1a1a;
+    --fg-color-dark: #111111;
+    --txt-color-std-dark: #A6A6A6;
+    --txt-color-hli-dark: #fff7cc;
+    --txt-color-lin-dark: #dff6ff;
+    --cursor-color-dark: #fff7cc;
+}
+
+body.light-theme {
+    background-color: var(--bg-color-light);
+    color: var(--txt-color-std-light);
+}
+
+body.dark-theme {
+    background-color: var(--bg-color-dark);
+    color: var(--txt-color-std-dark);
+}
+
+body.light-theme .terminal {
+    background-color: var(--fg-color-light);
+}
+
+body.dark-theme .terminal {
+    background-color: var(--fg-color-dark);
+}
+
+body.light-theme .prompt,
+body.light-theme li:first-child,
+body.light-theme .terminal #search {
+    color: var(--txt-color-hli-light);
+}
+
+body.dark-theme .prompt,
+body.dark-theme li:first-child,
+body.dark-theme .terminal #search {
+    color: var(--txt-color-hli-dark);
+}
+
+body.light-theme a:link,
+body.light-theme a:visited {
+    color: var(--txt-color-lin-light);
+}
+
+body.dark-theme a:link,
+body.dark-theme a:visited {
+    color: var(--txt-color-lin-dark);
+}
+
+body.light-theme #search::after {
+    border-bottom-color: var(--cursor-color-light);
+}
+
+body.dark-theme #search::after {
+    border-bottom-color: var(--cursor-color-dark);
+}
+
+body.dark-theme img {
+    filter: brightness(.8);
+}
+
+body,
+body * {
+    transition: all 0.5s ease-in-out;
+    caret-color: transparent;
+}
+
+body.preload,
+body.preload * {
+    transition-duration: 0s !important;
+    animation-duration: 0s !important;
+}
+
+html,
+body {
+    margin: 0px;
+    height: 100%;
+    font-family: "JetBrains Mono", "Courier New";
+}
+
+.container-full {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 4em;
+}
+
+@media (max-width: 1200px) {
+    .filler {
+        display: none !important;
+    }
+}
+
+.filler {
+    margin: 30px;
+    height: 600px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.filler img {
+    max-width: 100%;
+    max-height: 100%;
+    /* If you don't like the image shadow, just remove the next line */
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+}
+
+.terminal {
+    margin: 30px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+}
+
+.terminal>span {
+    margin: 10px 0 10px 0;
+}
+
+.terminal span {
+    border: none;
+    outline: none;
+    box-shadow: none;
+    background: transparent;
+}
+
+#search::after {
+    /* This is... not how cursors work.
+     * But it's easy and looks good enough. 
+     * It's also a temporary measure, switch 
+     * to "cursor-shape: underscore;" later.
+     */
+    content: " ";
+    animation: cursor-blink 1s step-end infinite;
+    border-bottom-style: solid;
+    border-width: 1px;
+}
+
+.prompt {
+    color: var(--text-color-highlight);
+}
+
+.fake-click:hover {
+    cursor: pointer;
+}
+
+.flex-row {
+    display: flex;
+    flex-direction: row;
+    white-space: pre;
+}
+
+.terminal ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+}
+
+.terminal ul:first-child {
+    padding-left: 0px;
+}
+
+.terminal li:not(li:first-child) {
+    padding: 8px 0 0 0;
+}
+
+.terminal a {
+    text-decoration: none;
+}
+
+@keyframes cursor-blink {
+    from {
+        border-width: 0;
+    }
+
+    50% {
+        border-width: 2px;
+    }
+}

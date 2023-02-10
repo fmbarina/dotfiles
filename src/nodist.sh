@@ -1,0 +1,330 @@
+#!/usr/bin/env bash
+
+# Var -------------------------------------------------------------------------
+
+distro='nodist' # replaced by distro name
+
+# Functions -------------------------------------------------------------------
+
+### File interaction ###
+
+delete() {
+	! [ -e "$1" ] && log "[delete] File/dir does not exist: $1" && return 1
+	log "[delete] Deleting $1"
+	if command -v trash-put >/dev/null 2>&1 ; then 
+		trash-put "$1" 
+	else
+		rm -rf "$1"
+	fi
+}
+
+backup() {
+	# FIXME: causes problem when backing up same-name items
+	# Ex: .config/<softwareA>/config | .config/<softwareB>/config
+	
+	if ! [ -e "$1" ]; then
+		log "[backup] Can not backup nonexistent target: $1"
+		abort "Could not backup nonexistent target: $1"
+	fi
+
+	if [ -e "$BKP_DIR/$(basename "$1")" ]; then
+		log "[backup] $1 already exists, stopped. Please remove or rename it."
+		abort "$1 was already backed up, stopped. Please remove or rename it."
+	fi
+
+	mkdir -p "$BKP_DIR"
+
+    # FIXME: shitballs fix this fuck
+	log "[backup] Backing up: $1"
+	mkdir -p "$(dirname "$(readlink -f "$1")")"
+	
+	cp -r  "$1" "$BKP_DIR$(dirname "$(readlink -f "$1")")" \
+		&& [ -z "$dotbkp" ] && dotbkp=yes
+}
+
+rsymlink() {
+	# Read link with stopper if function was not used with a link
+	! [ -L "$1" ] && log "[rsymlink] Not a link: $1. Stopping." && abort
+	readlink -f "$1"
+}
+
+_symlink() {
+	local link
+	local tgt
+	
+	link="$1"
+	tgt="$2"
+
+	if [ -L "$link" ] && [ "$(rsymlink "$link")" == "$tgt" ]; then
+		log "[link] Already linked: $link" && return 0
+	fi
+
+	if [ -e "$link" ]; then
+		log "[link] File already exists: $link"
+		backup "$link" && delete "$link"
+	fi
+
+	# If at this point it exists, there has been a mistake
+	[ -e "$link" ] && return 1
+
+	log "[link] Creating link: $link To: $tgt"
+
+	# this command confuses me greatly!
+	ln -sv 1>>"$log_file" 2>&1 "$tgt" "$link" && return 0
+	return 1
+}
+
+symlink() {
+	# We don' want to symlink entire directories, because we might want to do
+	# other things with them, that symlinking would create an issue with. Only
+	# actual files will be symlinked, directories will be created if needed.
+	local link
+	local tgt
+	
+	link="$1"
+	tgt="$2"
+
+	# Early return for the actual link creation
+	if ! [ -d "$tgt" ]; then
+		_symlink "$link" "$tgt"; return $?
+	fi
+	
+	# Else go down directories recursively
+	log "[link] $tgt is a directory, descending."
+
+	mkdir -p "$link"
+	for new_tgt in "$tgt"/* ; do
+		symlink "$(sed 's/\/$//' <<<"$link")/$(basename "$new_tgt")" "$new_tgt"
+	done
+}
+
+copy() {
+	log "[copy] Copying recursively: $1 To: $2"
+	cp >> "$log_file" -rpuv "$1" "$2"
+}
+
+xtr_tar() {
+	local compacted
+	local dest
+	compacted="$1"
+	dest="$2"
+
+	log "[xtr_tar] Extracting $compacted to $dest"
+	tar --directory "$dest" \
+		--extract --overwrite --file "$compacted" 1>"$LOG_OTH_FILE"
+}
+
+run_script() {
+	log "[run] Running: $1"
+	# shellcheck source=/dev/null
+	bash "$1"
+}
+
+clean_initfile_name() {
+	# From /path/to/NNN-initfile-name.sh
+	# Returns initfile-name
+	basename "$1" | sed 's/.sh//' | sed 's/^[0-9]\+\-\+/'
+}
+
+remove_extension() {
+	local file_name
+	file_name="$(basename "$1")"
+	echo "${file_name%.*}"
+}
+
+### Web ###
+
+download() {
+	log "[download] Downloading $1 to $2"
+	wget -q -P "$2" "$1"
+}
+
+### Python ###
+
+pip_is_installed() {
+	log "[pip] Checking if pip package installed: $1"
+
+	if pip show "$1" &> /dev/null ; then
+		log "[pip] $1 installed" ; return 0
+	else
+		log "[pip] Could not find $1" ; return 1
+	fi
+}
+
+pip_install() {
+	log "[pip] Installing $1"
+	python -m pip install "$1" --quiet
+
+	if pip_is_installed "$1"; then
+		log "[pip] Installed $1" ; return 0
+	else
+		log "[pip] Failed to install $1" ; return 1
+	fi
+}
+
+### git ###
+
+git_clone() {
+	local repo
+	local dest
+	repo="$1"
+	dest="$2"
+
+	if [ -e "$dest" ]; then
+		log "[git_clone] $dest already exists. Attempting to clone anyway."
+	fi
+
+	log "[git_clone] Cloning $repo to $dest"
+	git clone --quiet --recursive "$repo" "$dest"
+}
+
+git_dirname_from_url() {
+	echo "$1" | awk -F '/' '{print $5}' | sed 's/.git//'
+}
+
+### Desktop enviroment ###
+
+# Thanks to
+# https://unix.stackexchange.com/questions/116539/
+get_de() {
+	# Get desktop environment
+	local denv
+
+	if [ "$XDG_CURRENT_DESKTOP" = "" ]; then
+		denv=$(echo "$XDG_DATA_DIRS" | sed 's/.*\(xfce\|kde\|gnome\).*/\1/')
+	else
+		denv=$XDG_CURRENT_DESKTOP
+	fi
+	
+	denv=${denv,,}  # convert to lower case
+	echo "$denv"
+}
+
+is_gnome() {
+	[[ "$(get_de)" = *"gnome"* ]]
+}
+
+is_wayland() {
+	[ "$XDG_SESSION_TYPE" == "wayland" ]
+}
+
+### Flatpak ###
+
+flatpak_enable() {
+	log "[flatpak] Enabling flatpak in [$distro]"
+	_flatpak_enable
+}
+
+flatpak_is_installed() {
+	log "[flatpak] Checking if flatpak package installed: $1"
+	if flatpak info "$1" &> /dev/null ; then
+		log "[flatpak] $1 installed" ; return 0
+	else
+		log "[flatpak] Could not find $1" ; return 1
+	fi
+}
+
+flatpak_install() {
+	local origin
+	[ -z "$origin" ] && origin="$2"
+	[ -z "$origin" ] && origin=flathub
+
+	local package
+	package=$(bash "$DOTFILES/src/pkg/get_pkg.sh $1 $2")
+
+	log "[flatpak] Installing $package"
+	if flatpak install --assumeyes --noninteractive "$origin" "$package" ; then
+		log "[flatpak] Installed $package" ; return 0
+	else
+		log "[flatpak] Failed to install $package"; return 1
+	fi
+}
+
+### rust ###
+
+# TODO: consider install rust automatically or manually
+# Not every computer needs rust...? Nah they do. Unless... Yeah rust. No. Rust?
+# rust_is_installed() {
+# 	[ "$(rustc --version)" ]
+# }
+
+# rust_install() {
+# 	url https://sh.rustup.rs -sSf | sh -s -- -y --no-modify-path >> "$log_file"
+# }
+
+### Distro-specific functions ###
+
+# These themselves do little but log, the actual implementation per distro
+# is provided by the distro-specific files src/(distro-name).sh.
+
+install_file() {
+	log "[$distro] Installing by file: $1"
+	if _install_file "$1"; then
+		log "[$distro] Installed $1" ; return 0
+	else
+		log "[$distro] Could not install $1" ; return 1
+	fi
+}
+
+pm_update() {
+	log "[$distro] Updating packages"
+	if _pm_update ; then
+		log "[$distro] Updated packages" ; return 0
+	else
+		log "[$distro] Could not update packages" ; return 1
+	fi
+}
+
+pm_upgrade() {
+	log "[$distro] Upgrading packages"
+	if _pm_upgrade ; then
+		log "[$distro] Upgraded packages" ; return 0
+	else
+		log "[$distro] Could not upgrade packages" ; return 1
+	fi
+}
+
+pm_clean() {
+	log "[$distro] Cleaning up system packages"
+	if _pm_clean ; then
+		log "[$distro] Cleaned up packages" ; return 0
+	else
+		log "[$distro] Could not clean up packages" ; return 1	
+	fi
+}
+
+pm_is_installed() {
+	local package
+	package=$(bash "$DOTFILES/src/pkg/get_pkg.sh $1 $distro")
+
+	log "[$distro] Checking if package installed: $package"
+	if _pm_is_installed "$package"; then
+		log "[$distro] Found package: $package" ; return 0
+	else
+		log "[$distro] Could not find package: $package" ; return 1
+	fi
+}
+
+pm_install() {
+	local package
+	package=$(bash "$DOTFILES/src/pkg/get_pkg.sh $1 $distro")
+	
+	log "[$distro] Installing $package"
+	if _pm_install "$package"; then
+		log "[$distro] Sucessfully installed $package" ; return 0
+	else
+		log "[$distro] Could not install $package" ; return 1
+	fi
+}
+
+pm_remove() {
+	local package
+	package=$(bash "$DOTFILES/src/pkg/get_pkg.sh $1 $distro")
+	
+	log "[$distro] Uninstalling $package"
+	if _pm_remove "$package"; then
+		log "[$distro] Sucessfully uninstalled $package" ; return 0
+	else
+		log "[$distro] Could not uninstall $package" ; return 1
+	fi
+}

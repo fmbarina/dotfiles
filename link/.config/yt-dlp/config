@@ -1,0 +1,11 @@
+# Default format
+-f "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best"
+
+# Remove Annoying 'NA'
+--output-na-placeholder ""
+
+# Only download entire playlist if on playlist page
+--no-playlist
+
+# Default save location & format
+-o "%(channel|unknown-channel)s/%(playlist_title)s%(playlist_title& )s%(playlist_index)s%(playlist_title& - )s%(title)s%(section_start& [)s%(section_start)s%(section_start&-)s%(section_end)s%(section_end&])s (%(id)s).%(ext)s"

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+
+<body class="preload">
+    <div class="container-full">
+        <div class="filler">
+            <img id="media" alt="You should put something here">
+            <!-- content set by script -->
+        </div>
+
+        <div class="terminal">
+            <span>
+                <span class="prompt"></span>cat themes.txt
+            </span>
+
+            <span>
+                : <span class="fake-click" id="system">system</span>
+                | <span class="fake-click" id="light">light</span>
+                | <span class="fake-click" id="dark">dark</span>
+            </span>
+
+            <span>
+                <span class="prompt"></span>ls -aA bookmarks
+            </span>
+
+            <div class="flex-row" id="links">
+                <!-- content set by script -->
+            </div>
+
+            <span class="flex-row">
+                <span class="prompt"></span>
+                <span id="search-quote">
+                    <!-- search input set by script -->
+                </span>
+            </span>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+[ -z "$DOTFILES" ] && DOTFILES="$HOME/.dotfiles"
+
+bash "$HOME/.dotfiles/vendor/linux4ever07-scripts/packer.sh" "$@"

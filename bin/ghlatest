@@ -1,0 +1,53 @@
+#!/usr/bin/env python
+from re import sub, search, MULTILINE
+from requests import get
+from sys import exit
+import argparse
+
+"""
+This is, without doubt, not very robust.
+
+Using regex to find links is at least hacky, if the the repository doesn't
+have releases it just "Couldn't find the asset," if there's more than one
+match you just get first and on it goes... Anyways, it'll do for now. I do
+want to fix this up later and I'll hapilly accept help or suggestions if
+you have any.
+
+By the way, if you look at bin/30-* you'll see some dangerous practices.
+Do as I say, not as I do. And I say don't use this before it's fixed.
+"""
+
+
+def get_release_url(repo):
+    return 'https://github.com/'+repo+'/releases/latest'
+
+
+def get_file_url(page, extension):
+    re = '(?<=<a href=")([\d\w\-\.\_\/]+?\.'+extension+')(?="[\w\W]+?<\/a>)'
+    result = search(re, page, flags=MULTILINE)
+
+    if (result == None):
+        exit(f'Could not find {extension} filetype in assets.')
+
+    return 'https://github.com'+result.group(1)
+
+
+def main():
+    parser = argparse.ArgumentParser('Download latest release from github.')
+    parser.add_argument('repository', help='String in OWNER/REPO format.')
+    parser.add_argument('filetype', help='File extension to search in assets',
+                        choices=['deb', 'rpm'])
+    args = parser.parse_args()
+
+    repository = sub('/+', '/', args.repository).strip('/')
+
+    # Reminder: 200 doesn't mean there are any releases...
+    response = get(get_release_url(repository))
+
+    fileurl = get_file_url(response.text, args.filetype)
+
+    print(fileurl)
+
+
+if __name__ == '__main__':
+    main()
