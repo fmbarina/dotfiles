@@ -49,7 +49,7 @@ mpv,mpv
 ncdu,ncdu
 ncmpcpp,ncmpcpp
 neovim,neovim
-netcat,nc
+netcat,netcat
 nvtop,nvtop
 obsidian,
 obs-studio,

@@ -12,7 +12,7 @@ gsettings set org.gnome.desktop.interface clock-show-date false
 gsettings set org.gnome.desktop.peripherals.mouse accel-profile 'flat'
 
 # Recent/old files
-gsettings set org.gnome.desktop.privacy old-files-age uint32 30
+gsettings set org.gnome.desktop.privacy old-files-age 30
 gsettings set org.gnome.desktop.privacy recent-files-max-age 1
 gsettings set org.gnome.desktop.privacy remember-recent-files false
 gsettings set org.gnome.desktop.privacy remove-old-temp-files true
@@ -24,11 +24,12 @@ gsettings set org.gnome.desktop.wm.preferences num-workspaces 5
 gsettings set org.gnome.mutter dynamic-workspaces false
 
 # Screen
-gsettings set org.gnome.desktop.screensaver lock-delay uint32 30
-gsettings set org.gnome.desktop.session idle-delay uint32 600
+gsettings set org.gnome.desktop.screensaver lock-delay 30
+gsettings set org.gnome.desktop.session idle-delay 600
 
 # Nautilus
-gsettings set org.gnome.nautilus.icon-view captions ['size', 'none', 'none']
+# FIXME: how do I set an array with gsettings?
+# gsettings set org.gnome.nautilus.icon-view captions ['size', 'none', 'none']
 gsettings set org.gnome.nautilus.list-view use-tree-view true
 gsettings set org.gnome.nautilus.list-view use-tree-view true
 gsettings set org.gnome.nautilus.preferences show-delete-permanently true

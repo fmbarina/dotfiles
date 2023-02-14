@@ -19,6 +19,7 @@ _install_file() {
 }
 
 _pm_update() {
+	# TODO: this probably needs some checking with the error code/output?
 	sudo_do 'apt-get update'
 }
 
@@ -31,7 +32,9 @@ _pm_clean() {
 }
 
 _pm_is_installed() {
-	# i have forgotten how to debian. leave this here until i figure it out
+	# TODO: this probably needs some checking with the argument splitting 
+	# (or not) also i have forgotten how to debian. leave this here until 
+	# i figure it out
 	dpkg -s "$1" 2>&1 | grep Status >/dev/null 2>&1
 }
 

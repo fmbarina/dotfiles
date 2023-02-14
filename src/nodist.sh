@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-# Var -------------------------------------------------------------------------
-
-distro='nodist' # replaced by distro name
-
 # Functions -------------------------------------------------------------------
 
 ### File interaction ###
@@ -117,13 +113,13 @@ xtr_tar() {
 run_script() {
 	log "[run] Running: $1"
 	# shellcheck source=/dev/null
-	bash "$1"
+	source "$1"
 }
 
 clean_initfile_name() {
 	# From /path/to/NNN-initfile-name.sh
 	# Returns initfile-name
-	basename "$1" | sed 's/.sh//' | sed 's/^[0-9]\+\-\+/'
+	basename "$1" | sed 's/.sh//' | sed 's/^[0-9]*\-//'
 }
 
 remove_extension() {
@@ -204,6 +200,10 @@ is_gnome() {
 	[[ "$(get_de)" = *"gnome"* ]]
 }
 
+is_kde() {
+	[[ "$(get_de)" = *"kde"* ]]
+}
+
 is_wayland() {
 	[ "$XDG_SESSION_TYPE" == "wayland" ]
 }
@@ -216,24 +216,34 @@ flatpak_enable() {
 }
 
 flatpak_is_installed() {
-	log "[flatpak] Checking if flatpak package installed: $1"
-	if flatpak info "$1" &> /dev/null ; then
-		log "[flatpak] $1 installed" ; return 0
+	local package 
+	local origin
+
+	[ -z "$2" ] && origin="$2"
+	[ -z "$origin" ] && origin=flathub
+	package=$(bash "$DOTFILES/src/pkg/get_pkg.sh" "$1" "$origin")
+
+	log "[flatpak] Checking if flatpak package installed: $package"
+	# FIXME: this devnull doesn't work??
+	if flatpak info "$package" 1>/dev/null 2>&1 ; then
+		log "[flatpak] $package installed" ; return 0
 	else
-		log "[flatpak] Could not find $1" ; return 1
+		log "[flatpak] Could not find $package" ; return 1
 	fi
 }
 
 flatpak_install() {
-	local origin
-	[ -z "$origin" ] && origin="$2"
-	[ -z "$origin" ] && origin=flathub
-
 	local package
-	package=$(bash "$DOTFILES/src/pkg/get_pkg.sh $1 $2")
+	local origin
+
+	[ -z "$2" ] && origin="$2"
+	[ -z "$origin" ] && origin=flathub
+	package=$(bash "$DOTFILES/src/pkg/get_pkg.sh" "$1" "$origin")
 
 	log "[flatpak] Installing $package"
-	if flatpak install --assumeyes --noninteractive "$origin" "$package" ; then
+	if flatpak install --assumeyes --noninteractive "$origin" "$package" \
+		1>>"$log_file"
+	then
 		log "[flatpak] Installed $package" ; return 0
 	else
 		log "[flatpak] Failed to install $package"; return 1
@@ -267,11 +277,11 @@ install_file() {
 }
 
 pm_update() {
-	log "[$distro] Updating packages"
+	log "[$distro] Updating packages information"
 	if _pm_update ; then
-		log "[$distro] Updated packages" ; return 0
+		log "[$distro] Updated packages information" ; return 0
 	else
-		log "[$distro] Could not update packages" ; return 1
+		log "[$distro] Could not update packages information" ; return 1
 	fi
 }
 
@@ -295,7 +305,7 @@ pm_clean() {
 
 pm_is_installed() {
 	local package
-	package=$(bash "$DOTFILES/src/pkg/get_pkg.sh $1 $distro")
+	package=$(bash "$DOTFILES/src/pkg/get_pkg.sh" "$1" "$distro")
 
 	log "[$distro] Checking if package installed: $package"
 	if _pm_is_installed "$package"; then
@@ -307,7 +317,7 @@ pm_is_installed() {
 
 pm_install() {
 	local package
-	package=$(bash "$DOTFILES/src/pkg/get_pkg.sh $1 $distro")
+	package=$(bash "$DOTFILES/src/pkg/get_pkg.sh" "$1" "$distro")
 	
 	log "[$distro] Installing $package"
 	if _pm_install "$package"; then
@@ -319,7 +329,7 @@ pm_install() {
 
 pm_remove() {
 	local package
-	package=$(bash "$DOTFILES/src/pkg/get_pkg.sh $1 $distro")
+	package=$(bash "$DOTFILES/src/pkg/get_pkg.sh" "$1" "$distro")
 	
 	log "[$distro] Uninstalling $package"
 	if _pm_remove "$package"; then

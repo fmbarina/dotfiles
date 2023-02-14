@@ -43,14 +43,9 @@ pm_packages=(
 	x264
 	zsh
 	######
-	libreoffice
-	blender
-	godot
 	vlc
 	mpv
 	inkscape
-	kdenlive
-	krita
 	gimp
 	thunderbird
 	firefox
@@ -79,13 +74,13 @@ for pkg in "${pm_packages[@]}"; do
 	en_arrow "Checking $pkg"
 
 	if pm_is_installed "$pkg"; then
-		er_success "$pkg was already installed"
+		er_success "(already installed) $pkg"
 		continue
 	fi
 
 	ern_arrow "Installing $pkg "
 	if exec_with_animation pm_install "$pkg" ; then
-		er_success "$pkg installed"
+		er_success "installed $pkg"
 	else
 		er_error "$pkg could not be installed"
 	fi

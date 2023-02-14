@@ -17,7 +17,13 @@ _install_file() {
 }
 
 _pm_update() {
+	# DNF exit code will be 100 when there are updates available and a
+	# list of the updates will be printed, 0 if not and 1 if an
+	# error occurs.
+	# Source: dnf man page
 	dnf -q check-update 1>> /dev/null
+	[ $? -eq 1 ] && return 1
+	return 0
 }
 
 _pm_upgrade() {
@@ -29,7 +35,9 @@ _pm_clean() {
 }
 
 _pm_is_installed() {
- 	rpm -q "$1" &> /dev/null
+	# shellcheck disable=SC2086
+	# We *need* items to be split if there are multiple
+ 	rpm -q $1 &> /dev/null
 }
 
 _pm_install() {

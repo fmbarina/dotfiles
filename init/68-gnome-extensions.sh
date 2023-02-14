@@ -24,18 +24,22 @@ gnome_extensions=(
 # Functions -------------------------------------------------------------------
 
 gnome_id_from_link() {
-    echo "$1" | awk -F'/' '{print $5}'
+    echo "$1" | awk -F '/' '{print $5}'
 }
 
 gnome_name_from_link() {
-    echo "$1" | awk -F'/' '{print $6}'
+    echo "$1" | awk -F '/' '{print $6}'
 }
 
 gnome_install_ext() {
+    local restart
+    ! is_wayland && restart='--restart-shell'
+    
     # TODO: if on wayland, maybe don't try restarting, as it will fail
     local installer="$DOTFILES/vendor/gnome-shell-extension-installer"
     installer="$installer/gnome-shell-extension-installer"
-    bash "$installer" "$1" --yes --restart-shell 1>> "$log_file"
+
+    bash "$installer" "$1" --yes $restart 1>>"$log_file"
 }
 
 # Run -------------------------------------------------------------------------
