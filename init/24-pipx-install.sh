@@ -10,6 +10,7 @@ pipx_packages=(
 	bdfr        # Reddit dowload tool
 	gallery-dl  # Gallery download tool
 	tldr        # For when man is excessive
+	pipenv      # Python virtualenv management
 	pulsemixer  # CLI and curses mixer for PulseAudio
 	vermin      # Check python project version compatibility
 )

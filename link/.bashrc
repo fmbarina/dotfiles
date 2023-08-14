@@ -22,5 +22,7 @@ if [ -d "$MY_BASH_DIR" ]; then
 	done
 fi
 
+eval "$(_PIPENV_COMPLETE=bash_source pipenv)"
+
 unset rc
 
