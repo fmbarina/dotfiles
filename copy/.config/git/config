@@ -1,6 +1,7 @@
 [user]
 	email = felipebarina+git@gmail.com
 	name = Felipe M Barina
+	signingkey = C8353C716E5B807E
 [core]
 	autocrlf = input
 [alias]
@@ -20,3 +21,5 @@
 		| column -t -l 2 -s ' '
 [init]
 	defaultBranch = master
+[commit]
+	gpgSign = true
