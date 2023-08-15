@@ -1,51 +1,16 @@
-local wezterm = require 'wezterm'
-local act = wezterm.action
+local wezterm = require('wezterm')
+local visual = require('visual')
+local keys = require('keys')
+
+-- In newer versions of wezterm, use the config_builder
 local config = {}
+if wezterm.config_builder then
+  config = wezterm.config_builder()
+end
 
-config.window_background_opacity = 0.9
+config.automatically_reload_config = false
 
-config.window_decorations = "TITLE | RESIZE"
-config.enable_tab_bar = true
-config.hide_tab_bar_if_only_one_tab = true
-
-config.window_padding = {
-  left = 0,
-  right = 0,
-  top = 0,
-  bottom = 0,
-}
-
-config.keys = {
-  {
-    key = 'h',
-    mods = 'CTRL|SHIFT',
-    action = act.ActivatePaneDirection 'Left',
-  },
-  {
-    key = 'l',
-    mods = 'CTRL|SHIFT',
-    action = act.ActivatePaneDirection 'Right',
-  },
-  {
-    key = 'k',
-    mods = 'CTRL|SHIFT',
-    action = act.ActivatePaneDirection 'Up',
-  },
-  {
-    key = 'j',
-    mods = 'CTRL|SHIFT',
-    action = act.ActivatePaneDirection 'Down',
-  },
-  {
-    key = 'w',
-    mods = 'CMD',
-    action = wezterm.action.CloseCurrentPane { confirm = true },
-  },
-  {
-    key = 'w',
-    mods = 'CTRL|SHIFT',
-    action = wezterm.action.CloseCurrentTab { confirm = true },
-  },
-}
+visual.apply_to_config(config)
+keys.apply_to_config(config)
 
 return config
