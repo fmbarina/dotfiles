@@ -112,7 +112,7 @@ sudo_req() {
 		fi  
 	fi
 
-	sudo_do "touch /etc" 1> /dev/null 2>&1
+	sudo_do "touch /etc"
 	echo ''
 }
 
@@ -120,18 +120,20 @@ sudo_req() {
 # Execute sudo command without needing to ask password
 sudo_do() {
 	if [ -z "$sudop" ]; then
-		log "[sudo] No sudo password set, skipping: $1" 
+		log "[sudo] No sudo password set, skipping: $1"
 		return
 	fi
-		
-	log "[sudo] Executing: $1"
+
+	log "[sudo] Executing: $*"
 
 	local output ; output=/dev/null
 	[ -n "$log_enabled" ] && output="$log_file"
 
-	# shellcheck disable=SC2086
-	# echo "$sudop" | sudo -S 1>>"$output" 2>&1 $1 && return 0 || return 1
-	echo "$sudop" | sudo -S $1 1>>"$output" 2>&1 && return 0 || return 1
+	# if echo "$sudop" | sudo -S $@ 1>>"$output" && return 0
+	# shellcheck disable=SC2068
+	if echo "$sudop" | sudo -S $@ | tee --append "$output" >/dev/null ; then
+		return 0
+	fi
 
 	log "[sudo] There has been a sudo error. ($?)"
 	sudof+=1

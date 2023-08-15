@@ -134,6 +134,15 @@ remove_extension() {
 	echo "${file_name%.*}"
 }
 
+cd_and_back() {
+	local cwd
+	cwd="$(pwd)"
+	cd "$1" || return 1
+	shift
+	"$@"
+	cd "$cwd" || return 1
+}
+
 ### Web ###
 
 download() {
@@ -204,7 +213,7 @@ git_clone() {
 
 	if [ -e "$dest" ]; then
 		log "[git_clone] $dest already exists."
-		return
+		return 0
 	fi
 
 	log "[git_clone] Cloning $repo to $dest with $args"
