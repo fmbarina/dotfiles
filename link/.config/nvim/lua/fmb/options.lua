@@ -1,6 +1,12 @@
 local o = vim.opt
 local g = vim.g
 
+-- Custom start
+
+vim.g.transparent = false
+
+-- Custom end
+
 g.mapleader = ' '
 g.maplocalleader = ' '
 
@@ -42,12 +48,13 @@ o.colorcolumn = '80,100'
 -- o.filetype = 'on'
 
 o.list = true
---o.listchars:append 'eol:↲'
-o.listchars:append 'eol: '
+o.listchars:append 'eol: ' -- ¬ ↵
 o.listchars:append 'space: '
 o.listchars:append 'lead:⋅'
 o.listchars:append 'trail:␣'
 o.listchars:append 'tab:  →'
+
+o.fillchars = {eob = " "}
 
 o.ignorecase = true
 o.smartcase = true

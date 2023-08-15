@@ -3,6 +3,7 @@ return {
   config = function()
     require("themer").setup({
       colorscheme = "catppuccin",
+      transparent = vim.g.transparent,
       styles = {
         ["function"] = { style = 'italic' },
         functionbuiltin = { style = 'italic' },
