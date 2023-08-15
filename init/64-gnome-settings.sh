@@ -38,6 +38,9 @@ gsettings set org.gtk.Settings.FileChooser sort-directories-first true # gtk wha
 # Hope this helps
 gsettings set org.gnome.desktop.privacy report-technical-problems true
 
+# Custom shortcuts
+dconf load / <"$DOTFILES/misc/gnome/keybinds.conf"
+
 # Assuming that if the last command was successfull, then all must have been
 # TODO: how do I evaluate this more carefully
 if [ $? ]; then
