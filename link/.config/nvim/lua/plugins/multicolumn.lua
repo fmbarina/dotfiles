@@ -24,6 +24,11 @@ return {
           rulers = {81},
           to_line_end = true,
           always_on = true,
+          bg_color = '#28283e',
+        },
+        sh = {
+          scope = 'file',
+          rulers = {81},
         },
         NeogitCommitMessage = function(buf, win)
           return {
