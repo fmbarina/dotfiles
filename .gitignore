@@ -1,7 +1,3 @@
 backup/
 misc/firefox/startpage/img/*
-.zsh_history
 installed
-*.zprezto/
-*.extract/
-*.log
