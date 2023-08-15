@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+flatpak_path="$HOME/.var/app"
+flatpak_apps="$(flatpak list --app --columns=application)"
+flatpak_dirs="$(ls "$flatpak_path" -1)"
+declare -a useless
+
+for id in $flatpak_dirs; do
+	if ! echo "$flatpak_apps" | grep "$id" &>/dev/null ; then
+		useless+=("$flatpak_path/$id")
+	fi
+done
+
+if [ -n "${useless[*]}" ]; then
+	du -csh --apparent-size "${useless[@]}" | sort -h
+	echo 'Sizes probably not indicative of real disk usage.'
+fi
