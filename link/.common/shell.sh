@@ -37,7 +37,7 @@ alias sshperm='alias_sshperm'
 alias sshadd='ssh-add ~/.ssh/id_rsa'
 
 # Clean up $HOME
-alias wget='wget --hsts-file="$XDG_DATA_HOME/wget-hsts"'
+alias wget='wget --hsts-file="$XDG_CACHE_HOME/wget-hsts"'
 
 # Functions
 
