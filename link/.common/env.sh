@@ -36,10 +36,11 @@ export PATH="$PATH:$CARGO_HOME/bin"
 # Misc
 export LESSHISTFILE="$XDG_STATE_HOME/less/history"
 export XAUTHORITY="$XDG_RUNTIME_DIR/Xauthority"
+export W3M_DIR="$XDG_DATA_HOME/w3m"
 
 export GRADLE_USER_HOME="$XDG_DATA_HOME/gradle"
 
-export FZF_DEFAULT_COMMAND='fd --type f --follow --hidden \
+export FZF_DEFAULT_COMMAND='fd --hidden \
   --exclude .git \
   --exclude node_modules \
   --exclude Trash'

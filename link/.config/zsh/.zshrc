@@ -13,14 +13,10 @@ if [[ -s /etc/zshrc ]]; then
 	source /etc/zshrc
 fi
 
-# User specific environment
-if [ -f "$HOME/.common/env.sh" ]; then
-	source "$HOME/.common/env.sh"
-fi
-
-# Source shell aliases and functions
-if [ -f "$HOME/.common/shell.sh" ]; then
-  source "$HOME/.common/shell.sh"
+if [ -d "$HOME/.common" ] ; then
+	for rc in "$HOME/.common"/* ; do
+		source "$rc"
+	done
 fi
 
 eval "$(_PIPENV_COMPLETE=zsh_source pipenv)"
@@ -28,3 +24,4 @@ eval "$(_PIPENV_COMPLETE=zsh_source pipenv)"
 # To customize prompt, run `p10k configure` or edit ~/.zsh.d/.p10k.zsh.
 [[ ! -f "$ZDOTDIR/.p10k.zsh" ]] || source "$ZDOTDIR/.p10k.zsh"
 
+unset rc

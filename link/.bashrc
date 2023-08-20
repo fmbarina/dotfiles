@@ -5,14 +5,10 @@ if [ -f /etc/bashrc ]; then
 	source /etc/bashrc
 fi
 
-# User specific environment
-if [ -f "$HOME/.common/env.sh" ]; then
-	source "$HOME/.common/env.sh"
-fi
-
-# Source shell aliases and functions
-if [ -f "$HOME/.common/shell.sh" ]; then
-	source "$HOME/.common/shell.sh"
+if [ -d "$HOME/.common" ] ; then
+	for rc in "$HOME/.common"/* ; do
+		source "$rc"
+	done
 fi
 
 # User specific aliases and functions
