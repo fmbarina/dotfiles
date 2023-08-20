@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC2317
+
+! command -v fzf &>/dev/null && echo 'fzf not found' && exit 101
+
+notes_dir="$(xdg-user-dir DOCUMENTS)/Notes"
+notes_fmt='md'
+notes_new='CREATE NEW NOTE'
+notes_del='DELETE EXISTING NOTE(s)'
+fzf_opts='--preview-window=right:75%:wrap'
+bat_opts='--style=numbers --color=always'
+
+prompt_yn() {
+	while true; do
+		echo
+		read -n 1 -r -s -p "$1 [y/n] " yn
+		case $yn in
+			[Yy]*) printf '\n' && return 0 ;;
+			[Nn]*) printf '\n' && return 1 ;;
+		esac
+	done
+}
+
+clean() {
+	[ -f "$notes_new" ] && rm "$notes_new"
+	[ -f "$notes_del" ] && rm "$notes_del"
+	cd - &>/dev/null || exit 2
+}
+
+close() {
+	exit 0 # NOTE: exit is trapped and triggers clean :^)
+}
+
+new_note() {
+	note=
+	while [ -z "$note" ]; do
+		read -r -p 'Name of new note: ' note
+	done
+	touch "$notes_dir/$note.$notes_fmt" || exit 3
+	note="$note.$notes_fmt"
+}
+
+del_note() {
+	rm "$notes_new" "$notes_del"
+	local notes
+	mapfile -t notes < <(pick_note '' '-m')
+	[ -z "${notes[0]}" ] && return
+
+	printf '\nWill delete:\n'
+	for i in "${notes[@]}"; do echo "- $i" ; done
+
+	if prompt_yn 'Confirm deletion of note(s)?'; then
+		if command -v trash-put &>/dev/null ; then
+			trash-put "${notes[@]}" || exit 5
+		else
+			rm "${notes[@]}"
+		fi
+	fi
+}
+
+pick_note() {
+	# $1: preselect, $2: extra fzf args
+	# shellcheck disable=2086
+	if command -v bat &>/dev/null; then
+		fzf "$fzf_opts" -q "$1" --preview="bat $bat_opts {}" $2
+	else
+		fzf "$fzf_opts" -q "$1" --preview='cat {}' $2
+	fi
+}
+
+mkdir -p "$notes_dir" || exit 1
+cd "$notes_dir" || exit 2
+trap clean EXIT
+trap close INT
+
+note=$1
+while : ; do
+	touch "$notes_new" "$notes_del" | exit 3
+	note="$(pick_note "$note")"
+	[ "$note" == "$notes_del" ] && del_note && continue
+	[ "$note" == "$notes_new" ] && new_note
+	[ -n "$note" ] && "$VISUAL" "$note"
+	[ -z "$note" ] && break
+done
+
+close
