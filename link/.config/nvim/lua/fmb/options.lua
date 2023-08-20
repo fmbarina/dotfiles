@@ -43,10 +43,6 @@ o.splitright = true
 
 o.updatetime = 500
 
-o.colorcolumn = '80,100'
-
--- o.filetype = 'on'
-
 o.list = true
 o.listchars:append 'eol: ' -- ¬ ↵
 o.listchars:append 'space: '

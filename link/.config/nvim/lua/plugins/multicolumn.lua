@@ -1,5 +1,6 @@
 return {
   'fmbarina/multicolumn.nvim',
+  enabled = true,
   dev = true,
   config = function ()
     require('multicolumn').setup({
@@ -28,6 +29,7 @@ return {
         },
         sh = {
           scope = 'file',
+          to_line_end = true,
           rulers = {81},
         },
         NeogitCommitMessage = function(buf, win)

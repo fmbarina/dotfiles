@@ -6,7 +6,7 @@ return {
       notification = false,
       disabled_filetypes = {
         'undotree', 'qf', 'netrw', 'lazy', 'mason', 'help', 'NeogitStatus',
-        'NeogitPopup', 'Trouble', 'alpha',
+        'NeogitPopup', 'NeogitRebaseTodo', 'Trouble', 'alpha',
       },
     })
   end
