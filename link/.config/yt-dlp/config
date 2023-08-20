@@ -8,5 +8,5 @@
 --no-playlist
 
 # Default save location & format
--o "%(webpage_url_domain)s/%(playlist_title|no-playlist)s/%(playlist_index)s%(playlist_title&. )s[%(channel|unknown-channel)s] %(title|NO TITLE)s%(section_start& [)s%(section_start)s%(section_start&-)s%(section_end)s%(section_end&])s (%(id)s).%(ext)s"
+-o "%(webpage_url_domain)s/%(playlist_title|no-playlist)s/%(playlist_index)s%(playlist_title&. )s[%(artist,creator,channel,uploader,uploader_id|unknown-channel)s] %(title|NO TITLE)s%(section_start& [)s%(section_start)s%(section_start&-)s%(section_end)s%(section_end&])s (%(id)s).%(ext)s"
 
