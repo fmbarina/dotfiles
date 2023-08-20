@@ -53,6 +53,8 @@ pm_packages=(
 	mpv
 	inkscape
 	gimp
+	blender
+	godot
 	thunderbird
 	firefox
 	qbittorrent

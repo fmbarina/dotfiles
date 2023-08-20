@@ -6,8 +6,6 @@
 
 flatpak_packages=(
 	libreoffice
-	blender
-	godot
 	kdenlive
 	krita
 	flatseal

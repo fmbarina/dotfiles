@@ -6,7 +6,6 @@
 
 gnome_distro_packages=(
 	baobab
-	lollypop
 	foliate
 	easyeffects
 	gnome-builder
@@ -20,6 +19,7 @@ gnome_flatpak_packages=(
 	rnote
 	avvie
 	amberol
+	lollypop
 )
 
 # Run -------------------------------------------------------------------------
