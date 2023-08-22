@@ -1,0 +1,9 @@
+zmodule completion
+zmodule sorin-ionescu/prezto --root modules/history
+zmodule sorin-ionescu/prezto --root modules/editor
+zmodule sorin-ionescu/prezto --root modules/terminal
+zmodule zsh-users/zsh-history-substring-search --name zsh-history-substring-search
+zmodule romkatv/powerlevel10k
+zmodule skywind3000/z.lua --on-pull 'luajit z.lua --init zsh enhanced once >!init.zsh'
+zmodule skywind3000/czmod --on-pull 'sh build.sh' --source 'czmod.zsh'
+zmodule fmbarina/evalcache

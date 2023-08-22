@@ -1,24 +1,25 @@
-# .bashrc
+# Reference:
+# https://www.gnu.org/software/bash/manual/html_node/Bash-Startup-Files.html
+# [.bash_profile (.bash_login (.profile)) @login] OR [.bashrc @interactive]
 
 # Source global definitions
-if [ -f /etc/bashrc ]; then
-	source /etc/bashrc
+if [[ -s /etc/bashrc ]]; then
+	source /etc/bashrc # Fedora
+elif [[ -s /etc/bash.bashrc ]]; then
+	source /etc/bash.bashrc # Debian
 fi
 
-if [ -d "$HOME/.common" ] ; then
-	for rc in "$HOME/.common"/* ; do
-		source "$rc"
-	done
+# Source common interactive stuff (shell agnostic)
+if [[ -s $HOME/.common/shell.sh ]]; then
+	source "$HOME/.common/shell.sh"
 fi
 
-# User specific aliases and functions
-if [ -d "$MY_BASH_DIR" ]; then
-	for rc in "$MY_BASH_DIR"/*; do
+# Bash specific stuff / source my hidden mess
+if [[ -n $BASH_DIR && -d $BASH_DIR ]]; then
+	for rc in "$BASH_DIR"/*; do
 		source "$rc"
 	done
+	unset rc
 fi
 
 eval "$(_PIPENV_COMPLETE=bash_source pipenv)"
-
-unset rc
-

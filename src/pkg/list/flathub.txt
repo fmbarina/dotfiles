@@ -48,8 +48,10 @@ krita,org.kde.krita
 libreoffice,org.libreoffice.LibreOffice
 logisim-evolution,com.github.reds.LogisimEvolution
 lollypop,org.gnome.Lollypop
+luajit,
 mpd,
 mpv,io.mpv.Mpv
+musl-gcc,
 ncdu,
 ncmpcpp,
 neovim,

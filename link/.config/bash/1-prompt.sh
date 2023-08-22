@@ -37,7 +37,7 @@ set_prompt() {
 
 	# Git information if in repository directory
 	if is_git ; then
-		PS1+="[${BOL}${BRO}${BT}$(git_branch)${ET}"
+		PS1+="[${BO}${BRO}${BT}$(git_branch)${ET}"
 
 		local git_status
 
@@ -49,24 +49,24 @@ set_prompt() {
 
 		# Add git_status only if not empty
 		if [ -n "$git_status" ] ; then
-			PS1+="${BOL}${RED}${BT}:${ET}${git_status}"
+			PS1+="${BO}${RED}${BT}:${ET}${git_status}"
 		fi
 
 		PS1+="]"
 	fi
 
 	# Main part of the prompt eg [user@host]path/to/dir
-	PS1+="[${BOL}${CYA}${BT}\u${ET}@${BOL}${GRE}${BT}\h${ET}]" # user@host
-	PS1+="${BOL}${BT}\w${ET}\n" # working directory
+	PS1+="[${BO}${CYA}${BT}\u${ET}@${BO}${GRE}${BT}\h${ET}]" # user@host
+	PS1+="${BO}${BT}\w${ET}\n" # working directory
 	
 	# Add number of jobs (running+stopped) before prompt $ if there are any
 	if [ -n "$(jobs -sr | awk 'END {print $NR}')" ]; then
-		PS1+="|${BOL}${BT}\j${ET}| "
+		PS1+="|${BO}${BT}\j${ET}| "
 	fi	
 
 	# Show exit code if it's non-zero - Note this doesn't always imply an error
 	if (( exitcode != 0 )); then
-		PS1+="${BOL}${RED}${BT}|${ET}${BOL}${BT}${exitcode}${ET}${BOL}${RED}${BT}|${ET} "
+		PS1+="${BO}${RED}${BT}|${ET}${BO}${BT}${exitcode}${ET}${BO}${RED}${BT}|${ET} "
 	fi
 
 	PS1+="\$ "
@@ -75,6 +75,4 @@ set_prompt() {
 	history -a
 }
 
-export PROMPT_COMMAND=set_prompt
-
-
+PROMPT_COMMAND=set_prompt

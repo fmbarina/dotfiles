@@ -1,27 +1,40 @@
+# Reference:
+# https://zsh.sourceforge.io/Doc/Release/Files.html
+# .zshenv → [.zprofile @login] → [.zshrc @interactive] → [.zlogin @login]
+
+# zsh does a lot of the work for us. Actually, the real order is more like:
+# /etc/X → ZDOTDIR/X, and so on, except logout. ZDOTDIR/.zlogout → /etc/zlogout
+
+# Get module loader
+ZIM_HOME="${ZDOTDIR:-$HOME}/.zim"
+if [[ ! -e $ZIM_HOME/zimfw.zsh ]]; then
+	echo 'Getting Zim, hang tight...'
+	curl -fsSL --create-dirs -o "$ZIM_HOME/zimfw.zsh" \
+		https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
+fi
+if [[ ! $ZIM_HOME/init.zsh -nt ${ZDOTDIR:-${HOME}}/.zimrc ]]; then
+  source $ZIM_HOME/zimfw.zsh init -q
+fi
+
 # p10k instant prompt - things that require input must go above!
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+	source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# Source Prezto
-if [[ -s "${ZDOTDIR}/.zprezto/init.zsh" ]]; then
-  source "${ZDOTDIR}/.zprezto/init.zsh"
+# Set module configs, then call loader
+[[ -s $ZDOTDIR/.zmodrc ]] && source "$ZDOTDIR/.zmodrc"
+[[ -s $ZIM_HOME/init.zsh ]] && source "$ZIM_HOME/init.zsh"
+
+# Source common interactive stuff (shell agnostic)
+if [[ -s $HOME/.common/shell.sh ]]; then
+	source "$HOME/.common/shell.sh"
 fi
 
-# Source global definitions
-if [[ -s /etc/zshrc ]]; then
-	source /etc/zshrc
-fi
+# Zsh specific stuff
+ZSH_EVALCACHE_DIR="${ZDOTDIR:-$HOME}/.zsh_evalcache"
+_evalcache _PIPENV_COMPLETE=zsh_source pipenv
+bindkey '^P' history-substring-search-up
+bindkey '^N' history-substring-search-down
 
-if [ -d "$HOME/.common" ] ; then
-	for rc in "$HOME/.common"/* ; do
-		source "$rc"
-	done
-fi
-
-eval "$(_PIPENV_COMPLETE=zsh_source pipenv)"
-
-# To customize prompt, run `p10k configure` or edit ~/.zsh.d/.p10k.zsh.
-[[ ! -f "$ZDOTDIR/.p10k.zsh" ]] || source "$ZDOTDIR/.p10k.zsh"
-
-unset rc
+# To customize prompt, run 'p10k configure' or edit $ZDOTDIR/.p10k.zsh
+source "$ZDOTDIR/.p10k.zsh"

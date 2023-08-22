@@ -4,7 +4,7 @@
 
 REPOURL="https://github.com/fmbarina/dotfiles.git" 
 
-[ -z "$DEV_HOME" ] && DEV_HOME="$(xdg-user-dir DOCUMENTS)/git"
+[ -z "$DEV_HOME" ] && DEV_HOME="$(xdg-user-dir)/Dev"
 
 DOTFILES="$HOME/.dotfiles"
 LINK_DIR="$DOTFILES/link"

@@ -1,10 +1,10 @@
-# .bash_profile
-
-# Get everything
-if [ -f ~/.bashrc ]; then
-	source ~/.bashrc
+# Source common environment (shell agnostic)
+if [[ -s $HOME/.common/env.sh ]]; then
+	source "$HOME/.common/env.sh"
 fi
 
-if [ -f ~/.common/env.sh ]; then
-	source ~/.common/env.sh
+# An interactive bash login shell may not automatically source bashrc
+# which is why, conventionally, we do something like this at the end.
+if [[ -s $HOME/.bashrc ]]; then
+	source "$HOME/.bashrc"
 fi

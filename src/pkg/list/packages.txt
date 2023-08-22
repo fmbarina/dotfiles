@@ -48,8 +48,10 @@ krita
 libreoffice
 logisim-evolution
 lollypop
+luajit
 mpd
 mpv
+musl-gcc
 ncdu
 ncmpcpp
 neovim

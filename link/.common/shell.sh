@@ -1,11 +1,23 @@
-# Aliases
+# It's entirely unnecessary, but I like keeping aliases separate from their
+# implementations, which are the functions at the end of the file.
+
+# Classics
+alias cl='clear'
+alias ls='ls --color=auto'
+alias ll='ls -hAlF'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias pls='sudo'
+alias please='sudo'
+alias fucking='sudo'
 
 # Shorten
 alias pp="ncmpcpp"
 
 # "Custom" commands / Stuff I can't remember so I write it down
 alias loop='for_loop'
-alias frequencies='count_frequencies'
+alias frequency='count_frequencies'
 alias filetypes='count_filetypes'
 alias scrape='scrape_url'
 
@@ -21,25 +33,12 @@ alias rm="prompt_and_repeat 'Maybe try using trash-put (tt)' rm"
 alias wreckmyeditor="tt ~/.cache/nvim ~/.config/nvim ~/.local/share/nvim \
 	~/.local/state/nvim"
 
-# Classics
-alias cl='clear'
-alias ls='ls --color=auto'
-alias ll='ls -haAlF'
-alias ..='cd ../..'
-alias ...='cd ../../..'
-alias ....='cd ../../../..'
-alias pls='sudo'
-alias please='sudo'
-alias fucking='sudo'
-
 # Dumb crap for the dumb
 alias sshperm='alias_sshperm'
 alias sshadd='ssh-add ~/.ssh/id_rsa'
 
 # Clean up $HOME
 alias wget='wget --hsts-file="$XDG_CACHE_HOME/wget-hsts"'
-
-# Functions
 
 prompt_and_repeat() {
 	# Created to be used as a way to learn new commands, 
@@ -79,9 +78,9 @@ prompt_yn() {
 for_loop() {
 	# Loop from $1 to $2, by $3. Executes remaining args as command in loop.
 	# Handy for one-liners, '_i' in input cmd is replaced by the integer
-	_i=$1
-	_cmd="${*:4}"
-	_cmd="${_cmd//_i/\$_i}"
+	local _i=$1
+	local _cmd="${*:4}"
+	local _cmd="${_cmd//_i/\$_i}"
 
 	# shellcheck disable=2016 # $_i mustn't expand yet. 2016 is a bit annoying
 	# _cmd="$(echo "$@" | cut -d ' ' -f 1,2,3 --complement | \
@@ -110,7 +109,7 @@ count_filetypes() {
 
 	command -v 'fd' 1> /dev/null 2>&1 && tool='fd . --max-depth=1 --type f -H'
 
-	# NOTE: behold, this perl command I stole from stackoverflow
+	# behold, this perl command I stole from stackoverflow
 	eval "${tool}" | perl -ne 'print $1 if m/\.([^.\/]+)$/' | count_frequencies
 }
 
@@ -147,8 +146,8 @@ alias_bdfr() {
  	 	scheme="--file-scheme={UPVOTES}_{DATE}_{REDDITOR}_{TITLE}_{POSTID}"
  	fi
 	\bdfr "$1" "${bdfr_dir}" "${scheme}" "${@:2}"
-	# We are actually including paths even in --help, which doesn't make sense,
-	# but it works. That's good enough for me in most cases.
+	# This is actually including paths even in --help commands, which doesn't
+	# make sense, but it works in most cases. That's good enough for me.
 }
 
 alias_yt_dlp() {
@@ -192,4 +191,3 @@ alias_sshperm() {
 	[ -e ~/.ssh/id_rsa ] && chmod 600 ~/.ssh/id_rsa*
 	[ -e ~/.ssh/config ] && chmod 644 ~/.ssh/config
 }
-
