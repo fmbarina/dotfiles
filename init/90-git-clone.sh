@@ -6,9 +6,8 @@ repo_dir="$DEV_HOME"
 
 git_repos=(
 	'https://github.com/fmbarina/multicolumn.nvim'
-	'https://github.com/b3nj5m1n/xdg-ninja.git'
-	'https://github.com/sudofox/shell-mommy.git'
-	# I'm gonna find a funny use for the last one, just give me time
+	'https://github.com/b3nj5m1n/xdg-ninja'
+	'https://github.com/romkatv/zsh-bench'
 )
 
 # Run -------------------------------------------------------------------------

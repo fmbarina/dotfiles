@@ -55,10 +55,8 @@ pm_packages=(
 	gimp
 	blender
 	godot
-	thunderbird
 	firefox
 	qbittorrent
-	easytag
 	pdfarranger
 )
 

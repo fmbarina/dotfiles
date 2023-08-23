@@ -21,9 +21,13 @@ flatpak_packages=(
 	ryujinx
 	yuzu
 	steam
+	thunderbird
 )
 
 # Run -------------------------------------------------------------------------
+
+# TODO: Add flatpak_is_enabled() to check and use appropriate logic here
+flatpak_enable
 
 for pkg in "${flatpak_packages[@]}"; do
 	en_arrow "Checking $pkg"
