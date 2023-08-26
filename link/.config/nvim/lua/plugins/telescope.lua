@@ -6,6 +6,9 @@ return {
     { 'nvim-telescope/telescope-fzf-native.nvim', build = "make" },
     -- 'nvim-telescope/telescope-dap.nvim', TODO: glitchy, come back later?
   },
+  cmd = {
+    'Telescope',
+  },
   keys = {
     {'<leader>ff', '<cmd>Telescope find_files<cr>', desc='Fuzzy search files by filename'},
     {'<leader>ft', '<cmd>Telescope live_grep<cr>', desc='Fuzzy search text in files'},
