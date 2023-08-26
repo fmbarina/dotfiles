@@ -22,8 +22,6 @@ xone_install() {
 
 mkdir -p "$repo_dir"
 
-### Prezto ###
-
 en_arrow 'Checking Xone'
 
 if [ -d "$repo_dir/xone" ] ; then
