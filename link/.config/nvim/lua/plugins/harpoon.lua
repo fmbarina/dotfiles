@@ -3,6 +3,12 @@ return {
   dependencies = {
     'nvim-lua/plenary.nvim',
   },
+  keys = {
+    {
+      '<leader>a',
+      desc='Add file to harpoon'
+    },
+  },
   config = function ()
     require('harpoon').setup()
     local mark = require('harpoon.mark')
