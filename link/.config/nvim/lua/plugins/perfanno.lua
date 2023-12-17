@@ -15,7 +15,7 @@ return {
     local perfanno = require('perfanno')
     local util = require('perfanno.util')
 
-    local bg_color = require('fmb.utils').get_hl_value('Normal', 'bg')
+    local bg_color = require('fmb.util').get_hl_value('Normal', 'bg')
     local hot_color = '#CC3300'
 
     perfanno.setup({

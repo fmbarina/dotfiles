@@ -1,6 +1,7 @@
 return {
   'rcarriga/nvim-notify',
-  version = '3.*',
+  version = '^3',
+  event = {'VeryLazy'},
   config = function ()
     local opts = {
       top_down = false,

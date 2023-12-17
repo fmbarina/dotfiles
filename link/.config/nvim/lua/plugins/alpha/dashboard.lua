@@ -27,14 +27,22 @@ local dashboard = require('alpha.themes.dashboard')
 dashboard.section.header.val = headers.bonfire
 
 dashboard.section.buttons.val = {
-  dashboard.button("f", "  Find File", "<cmd>Lazy load telescope.nvim<cr><bar><cmd>Telescope find_files<cr>"),
-  dashboard.button("e", "  New file", "<cmd>ene <bar> startinsert <cr>"),
-  dashboard.button("r", "🖿  Recent Files", "<cmd>Lazy load telescope.nvim<cr><bar><cmd>Telescope oldfiles<cr>"),
-  dashboard.button("t", "  Find Text", "<cmd>Lazy load telescope.nvim<cr><bar><cmd>Telescope live_grep<cr>"),
-  dashboard.button("c", "  Configuration", "<cmd>cd $HOME/.dotfiles<cr><bar><cmd>Ex<cr><cr>"),
+  dashboard.button("f", "  Find File", "<cmd>Telescope find_files<cr>"),
+  dashboard.button("e", "󱇧  New File", "<cmd>ene <bar> startinsert <cr>"),
+  dashboard.button("r", "󱋡  Recent Files", "<cmd>Telescope oldfiles<cr>"),
+  dashboard.button("t", "󰱼  Find Text", "<cmd>Telescope live_grep<cr>"),
+  dashboard.button("c", "  Configuration", "<cmd>cd $DOTFILES<cr><bar><cmd>Ex<cr><cr>"),
   dashboard.button("u", "  Update Plugins", "<cmd>Lazy update<cr>"),
-  dashboard.button("q", "  Quit Neovim", "<cmd>qa!<cr>"),
+  dashboard.button("q", "󰿅  Quit Neovim", "<cmd>qa!<cr>"),
 }
+
+local persist = require('persistence')
+if persist.session_available() then
+  table.insert(
+    dashboard.section.buttons.val, 5,
+    dashboard.button('s', '󱂬  Restore Session', '<cmd>PersistLoad<cr>')
+  )
+end
 
 local footer = function()
   local version = " " .. vim.version().major .. "." .. vim.version().minor .. "." .. vim.version().patch

@@ -1,0 +1,201 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC2010
+
+RENPY_SAVE_DIR="${RENPY_SAVE_DIR:-"${XDG_DATA_HOME:-"$HOME/.local/share"}/renpy"}"
+DATA_DIR="$RENPY_SAVE_DIR/.renpylaunch"
+
+prompt_yn() {
+	while true; do
+		echo
+		read -n 1 -r -s -p "$1 [y/n] " yn
+		case $yn in
+			[Yy]*) printf '\n' && return 0 ;;
+			[Nn]*) printf '\n' && return 1 ;;
+		esac
+	done
+}
+
+load_save() {
+	mkdir -p "$HOME/.renpy"
+	if ! ln -s "$RENPY_SAVE_DIR/$game_save" "$HOME/.renpy/$game_save"; then
+		echo "Error linking saves to ~/.renpy. Stopping."
+		exit 221
+	fi
+}
+
+store_save() {
+	if ! mv "$HOME/.renpy/$game_save" "$RENPY_SAVE_DIR"; then
+		echo "Error copying saves back from ~/.renpy. Stopping."
+		echo "Your saves are still in '$HOME/.renpy/$game_name'!"
+		exit 222
+	fi
+}
+
+record_launcher() {
+	touch "$DATA_DIR/launchers"
+	echo "$game_name:$(readlink -f "$game_launcher")" >>"$DATA_DIR/launchers"
+}
+
+retrieve_launcher() {
+	awk -F ':' -v pat="$game_name" '$1~pat {print $2}' "$DATA_DIR/launchers"
+}
+
+record_savename() {
+	touch "$DATA_DIR/saves"
+	echo "$game_name/$game_save" >>"$DATA_DIR/saves"
+}
+
+retrieve_savename() {
+	awk -F '/' -v pat="$game_name" '$1~pat {print $2}' "$DATA_DIR/saves"
+}
+
+cat_invalid_launcher() {
+	cat <<EOF
+Invalid launcher! "$game_name" is apparently not an executable, nor on PATH, nor
+the name of a game that was previouly recorded. Depending on what you intended
+to do, try checking your first argument, the current directory or your PATH.
+EOF
+}
+
+cat_consider() {
+	cat <<EOF
+Consider providing the name of the game save directory as the second argument.
+Can't continue without dirname. Stopping.
+EOF
+}
+
+cat_already_in() {
+	cat <<EOF
+"$game_save" already in $HOME/.renpy! This might mean:
+- $game_name is already running.
+- A previous save was not properly stored or cleaned.
+- An error occourred.
+Stopping.
+EOF
+}
+
+cat_couldnt_get() {
+	cat <<EOF
+Couldn't get game save directory name. In the future, consider providing the
+name of the game save directory as the second argument to renplay. If $game_name
+created a save, it's still in '$HOME/.renpy/' and you will need to move it to
+'$RENPY_SAVE_DIR' manually!
+EOF
+}
+
+# LIST MODE
+if [[ $1 == -l || $1 == --list ]] && [[ -r $DATA_DIR/launchers ]]; then
+	games=$(awk -F ':' '{print $1}' "$DATA_DIR/launchers")
+	output=
+	for game_name in $games; do
+		output+="$game_name%$(retrieve_savename)%$(retrieve_launcher)"$'\n'
+	done
+	echo "$output" | column -t -s'%' -N 'GAME,SAVE,LAUNCHER'; exit 0
+fi
+
+# NOTE: renpy wayland hack
+if [[ $XDG_SESSION_TYPE == wayland && -e /usr/lib64/libSDL2-2.0.so.0 ]]; then
+	export SDL_DYNAMIC_API=/usr/lib64/libSDL2-2.0.so.0
+	export SDL_VIDEODRIVER=wayland
+fi
+
+# No argument guard
+[[ -z $1 ]] && echo 'No game provided!' && exit 201
+
+# Set pattern if any was passed
+[[ -n $2 ]] && pattern="$2"
+
+mkdir -p "$DATA_DIR"
+mkdir -p "$RENPY_SAVE_DIR"
+
+# Get how to launch the game and its name
+if [[ -x $1 ]]; then
+	game_launcher="$1"
+	game_name=$(basename "${game_launcher%.*}")
+	record_launcher
+elif command -v "$1" >/dev/null; then
+	game_launcher="$1"
+	game_name="$1"
+else
+	if ! [[ -r $DATA_DIR/launchers ]]; then
+		cat_invalid_launcher; exit 202
+	fi
+	game_name="$1"
+	recovered_launcher=$(retrieve_launcher)
+	if [[ -z $recovered_launcher ]]; then
+		cat_invalid_launcher; exit 202
+	fi
+	game_launcher="$recovered_launcher"
+fi
+
+# We might have recorded the game's save name in the past! Check for it
+if [[ -r $DATA_DIR/saves ]]; then
+	recovered_savename="$(retrieve_savename)"
+	[[ -n $recovered_savename ]] && game_save="$recovered_savename"
+fi
+
+if [[ -z $game_save ]]; then
+	# If renpy dir doesn't exist yet, then it must be the first run of any game
+	if [[ -d $RENPY_SAVE_DIR ]]; then
+		game_save=$(ls -1 "$RENPY_SAVE_DIR" | \
+			grep "${pattern:-$game_name}" --ignore-case)
+		game_save=$(basename "$game_save")
+	else
+		first_run=y
+	fi
+fi
+
+# Make sure we have the dirname (or this is the first run of the game)
+if [[ -z $game_save && -z $first_run ]]; then
+	echo "Couldn't get game save directory name."
+	if prompt_yn "Is this your first time playing $game_name?"; then
+		first_run=y
+	else
+		cat_consider; exit 203
+	fi
+fi
+
+# Check if game save already in ~/.renpy
+if [[ -n $game_dir && -e $HOME/.renpy/$game_save ]]; then
+	cat_already_in; exit 204
+fi
+
+# Link saves into expected directory, if there are any
+if [[ -z $first_run ]]; then
+	load_save
+fi
+
+# Run the game
+"$game_launcher" || exit $?
+
+# If it's the first run, time to figure out where the game is saved!
+if [[ -n $first_run ]]; then
+	game_save=$(ls -1 "$HOME/.renpy" | \
+		grep "${pattern:-$game_name}" --ignore-case)
+	game_save=$(basename "$game_save")
+
+	if [[ -z $game_save ]]; then
+		cat_couldnt_get
+		exit 205
+	fi
+fi
+
+# We shouldn't try to save it if it's already been saved before
+if [[ -z $recovered_savename ]]; then
+	record_savename
+fi
+
+# In the first run, move the actual save to the proper location
+# In subsequent runs, we need only remove a symbolic link
+if [[ -n $first_run ]]; then
+	store_save
+elif [[ -L $HOME/.renpy/$game_save ]]; then
+	rm "$HOME/.renpy/$game_save"
+else
+	echo "Not first run, neither symbolic link. Something broke!"; exit 206
+fi
+
+# Other games could be running, so we have to check if .renpy is empty
+if [[ -z $(ls -A "$HOME/.renpy") ]]; then
+	rmdir "$HOME/.renpy" # And if so, we delete it
+fi

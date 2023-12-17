@@ -1,5 +1,5 @@
 return {
-  enabled = false,
   'xeluxee/competitest.nvim',
+  enabled = false,
   dependencies = 'MunifTanjim/nui.nvim',
 }

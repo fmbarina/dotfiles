@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+DESC_FILE="$(xdg-user-dir DOCUMENTS)/Notes/initial-commit-messages.md"
+
+lines=$(wc -l <"$DESC_FILE")
+body=$(sed -n "$((1 + RANDOM % lines))p" "$DESC_FILE")
+
+git commit -m 'Initial commit' -m "$body"

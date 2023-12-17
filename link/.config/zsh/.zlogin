@@ -12,3 +12,5 @@
 		fi
 	fi
 } &!
+
+cat /etc/motd

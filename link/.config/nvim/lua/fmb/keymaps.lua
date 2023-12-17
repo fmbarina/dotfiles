@@ -1,32 +1,27 @@
-local function map(mode, l, r, opts)
-  opts = opts or {}
-  vim.keymap.set(mode, l, r, opts)
-end
+local bind = require('fmb.util').bind
 
-map('n', '<leader>pv', vim.cmd.Ex, {desc='Open netrw explorer'})
-
--- Move selected line region up/down
-map('v', 'J', "<cmd>m '>+1<CR>gv=gv")
-map('v', 'K', "<cmd>m '<-2<CR>gv=gv")
+bind('n', '<leader>pv', vim.cmd.Ex, {desc='Open netrw explorer'})
 
 -- Center cursor in page jumping/searching
-map('n', '<C-d>', '<C-d>zz')
-map('n', '<C-u>', '<C-u>zz')
-map('n', 'n', 'nzzzv')
-map('n', 'N', 'Nzzzv')
+bind('n', '<C-d>', '<C-d>zz')
+bind('n', '<C-u>', '<C-u>zz')
+bind('n', 'n', 'nzzzv')
+bind('n', 'N', 'Nzzzv')
 
 -- paste/delete without rewriting buffer (send to void)
-map('x', '<leader>p', '\"_dP')
-map('n', '<leader>d', '\"_dP')
-map('v', '<leader>dd', '\'_dP')
+bind('x', '<leader>p', '\"_dP', {desc='Paste without overwriting buf'})
+bind('n', '<leader>dd', '\"_dP', {desc='Delete without overwriting buf'})
+bind('v', '<leader>d', '\'_dP', {desc='Delete line without overwriting buf'})
 
 -- yank to system clipboard
-map('n', '<leader>y', '\"+y')
-map('n', '<leader>Y', '\"+Y')
-map('v', '<leader>y', '\"+y')
+bind('n', '<leader>y', '\"+y', {desc='Yank to system'})
+bind('n', '<leader>Y', '\"+Y', {desc='Yank remaining to system'}) -- TODO: this aint right
+bind('v', '<leader>y', '\"+y', {desc='yank selection to system'})
 
 -- popup terminal
-map('n', '<C-e>', require('fmb.terminal').toggle)
-map('t', '<C-e>', require('fmb.terminal').toggle)
-map('t', '<esc>', [[<C-\><C-n>]])
+bind('n', '<C-e>', require('fmb.terminal').toggle)
+bind('t', '<C-e>', require('fmb.terminal').toggle)
+bind('t', '<esc>', [[<C-\><C-n>]])
 
+-- clear last search highlight
+bind('n', '<C-/>', function() vim.cmd.noh() end)

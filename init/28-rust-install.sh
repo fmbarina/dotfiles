@@ -6,10 +6,11 @@
 # Var -------------------------------------------------------------------------
 
 cargo_packages=(
-	bandwhich
 	difftastic
 	du-dust
 	dua-cli
+	eza # exa, but hopefully not dead
+	flavours
 	git-delta
 	hyperfine
 	onefetch
@@ -47,4 +48,3 @@ for pkg in "${cargo_packages[@]}"; do
 		er_error "$pkg could not be installed"
 	fi
 done
-

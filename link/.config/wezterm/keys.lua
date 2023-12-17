@@ -22,56 +22,107 @@ wezterm.on('decrease-opacity', function(window, pane)
   window:set_config_overrides(overrides)
 end)
 
+local function is_vim(pane)
+  -- this is set by smart-splits.nvim, and unset on ExitPre in Neovim
+  return pane:get_user_vars().IS_NVIM == 'true'
+end
+
+local direction_keys = {
+  Left = 'h',
+  Down = 'j',
+  Up = 'k',
+  Right = 'l',
+  -- reverse lookup
+  h = 'Left',
+  j = 'Down',
+  k = 'Up',
+  l = 'Right',
+}
+
+local function split_nav(resize_or_move, key)
+  return {
+    key = key,
+    mods = resize_or_move == 'resize' and 'META' or 'CTRL',
+    action = wezterm.action_callback(function(win, pane)
+      if is_vim(pane) then
+        -- pass the keys through to vim/nvim
+        win:perform_action({
+          SendKey = { key = key, mods = resize_or_move == 'resize' and 'META' or 'CTRL' },
+        }, pane)
+      else
+        if resize_or_move == 'resize' then
+          win:perform_action({ AdjustPaneSize = { direction_keys[key], 3 } }, pane)
+        else
+          win:perform_action({ ActivatePaneDirection = direction_keys[key] }, pane)
+        end
+      end
+    end),
+  }
+end
+
+local leader = { key = 'Space', mods = 'CTRL', timeout_milliseconds = 3000 }
+
 local keys = {
-  {
-    key = 'h',
-    mods = 'CTRL|SHIFT',
-    action = act.ActivatePaneDirection 'Left',
-  },
-  {
-    key = 'l',
-    mods = 'CTRL|SHIFT',
-    action = act.ActivatePaneDirection 'Right',
-  },
-  {
-    key = 'k',
-    mods = 'CTRL|SHIFT',
-    action = act.ActivatePaneDirection 'Up',
-  },
-  {
-    key = 'j',
-    mods = 'CTRL|SHIFT',
-    action = act.ActivatePaneDirection 'Down',
-  },
+  -- move between split panes
+  split_nav('move', 'h'),
+  split_nav('move', 'j'),
+  split_nav('move', 'k'),
+  split_nav('move', 'l'),
+  -- resize panes
+  split_nav('resize', 'h'),
+  split_nav('resize', 'j'),
+  split_nav('resize', 'k'),
+  split_nav('resize', 'l'),
   {
     key = 'w',
-    mods = 'CMD',
-    action = wezterm.action.CloseCurrentPane { confirm = true },
+    mods = 'CTRL|META',
+    action = act.CloseCurrentPane { confirm = true },
   },
   {
     key = 'w',
     mods = 'CTRL|SHIFT',
-    action = wezterm.action.CloseCurrentTab { confirm = true },
+    action = act.CloseCurrentTab { confirm = true },
   },
   {
     key = 'i',
     mods = 'CTRL|SHIFT',
-    action = wezterm.action.EmitEvent 'increase-opacity',
+    action = act.EmitEvent 'increase-opacity',
   },
   {
     key = 'o',
     mods = 'CTRL|SHIFT',
-    action = wezterm.action.EmitEvent 'decrease-opacity',
+    action = act.EmitEvent 'decrease-opacity',
   },
   {
-    key = 'r',
-    mods = 'CMD|SHIFT',
-    action = wezterm.action.ReloadConfiguration,
+    key = 'R',
+    mods = 'CTRL|SHIFT',
+    action = act.ReloadConfiguration,
   },
-
+  {
+    key = 's',
+    mods = 'LEADER',
+    action = act.SplitVertical { domain = 'CurrentPaneDomain' },
+  },
+  {
+    key = 'v',
+    mods = 'LEADER',
+    action = act.SplitHorizontal { domain = 'CurrentPaneDomain' },
+  },
+  -- remap debug overlay since I want to use <C-L> in nvim
+  {
+    key = 'L',
+    mods = 'CTRL|SHIFT',
+    action = 'DisableDefaultAssignment',
+  },
+  {
+    key = 'L',
+    mods = 'LEADER|CTRL|SHIFT',
+    action = act.ShowDebugOverlay,
+  }
 }
 
 function module.apply_to_config(config)
+  config.leader = leader
   config.keys = keys
 end
 

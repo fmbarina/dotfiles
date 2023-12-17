@@ -6,4 +6,4 @@ zmodule zsh-users/zsh-history-substring-search --name zsh-history-substring-sear
 zmodule romkatv/powerlevel10k
 zmodule skywind3000/z.lua --on-pull 'luajit z.lua --init zsh enhanced once >!init.zsh'
 zmodule skywind3000/czmod --on-pull 'sh build.sh' --source 'czmod.zsh'
-zmodule fmbarina/evalcache
+zmodule mroth/evalcache

@@ -1,16 +1,18 @@
 return {
-  "themercorp/themer.lua",
+  'themercorp/themer.lua',
+  enabled = true,
   config = function()
-    require("themer").setup({
-      colorscheme = "catppuccin",
+    require('themer').setup({
+      enable_installer = true,
+      colorscheme = 'catppuccin',
       transparent = vim.g.transparent,
       styles = {
-        ["function"] = { style = 'italic' },
+        ['function'] = { style = 'italic' },
         functionbuiltin = { style = 'italic' },
         variable = { style = 'italic' },
         variableBuiltIn = { style = 'italic' },
-        parameter  = { style = 'italic' },
+        parameter = { style = 'italic' },
       },
     })
-  end
+  end,
 }

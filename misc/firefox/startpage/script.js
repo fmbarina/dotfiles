@@ -2,7 +2,6 @@ const config = {
     "media": [
         "./img/1.jpg",
         "./img/2.jpg",
-        // "/home/fmbarina/.dotfiles/misc/firefox/startpage/res/image.jpg",
     ],
     "prompts": [
         "me@localhost:~$ ",

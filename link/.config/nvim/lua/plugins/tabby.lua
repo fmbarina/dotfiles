@@ -1,6 +1,7 @@
 return {
   'nanozuki/tabby.nvim',
-  version = '2.*',
+  version = '^2',
+  event = {'TabEnter', 'TabLeave'},
   config = function()
     local theme = {
       fill = 'TabLineFill',

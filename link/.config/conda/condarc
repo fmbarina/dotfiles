@@ -1,0 +1,7 @@
+conda-build:
+  # `conda-build.root-dir` option does not support environment expansion
+  root-dir: /home/fmbarina/.local/share/conda/conda-bld
+envs_dirs:
+  - ${XDG_DATA_HOME}/conda/envs
+pkgs_dirs:
+  - ${XDG_CACHE_HOME}/conda/pkgs

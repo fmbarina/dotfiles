@@ -4,18 +4,27 @@
 	signingkey = C8353C716E5B807E
 [core]
 	autocrlf = input
+	pager = delta
+[interactive]
+	diffFilter = delta --color-only
 [alias]
+	cl=clone
 	co=checkout
+	prev=checkout HEAD^
+	next=checkout HEAD@{1}
 	br=branch
 	s=status
 	st=status
 	cm=commit -m
-	com=commit -m
+	cme=commit -e -m
 	unstage=reset HEAD --
 	uncommit=reset --soft HEAD^
-	un=unstage
+	uns=unstage
+	unc=uncommit
 	fa=fetch --all
 	last=log -1 HEAD
+	log-graph=log --all --decorate --oneline --graph
+	first-commit=! git-initial-commit
 	alias=! git config --get-regexp ^alias\\. \
 		| sed s/alias\\.// \
 		| column -t -l 2 -s ' '
@@ -23,3 +32,14 @@
 	defaultBranch = master
 [commit]
 	gpgSign = true
+[diff]
+	colorMoved = default
+[merge]
+	conflictstyle = diff3
+	tool=nvimdiff2 # Which uses a 3-pane layout... great naming
+[delta]
+	navigate = true
+	side-by-side = true
+[includeIf "gitdir:**/work"]
+	path = ./config@work.inc
+	# sshCommand = ssh -i <file>

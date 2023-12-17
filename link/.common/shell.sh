@@ -1,25 +1,31 @@
-# It's entirely unnecessary, but I like keeping aliases separate from their
-# implementations, which are the functions at the end of the file.
+# Make stuff pretty, verbose and slightly safer
+alias ls='ls --color=auto'
+alias grep='grep --color=auto'
+alias mv='mv -iv'
+alias cp='cp -iv'
 
 # Classics
+alias cc='cd && clear'
 alias cl='clear'
-alias ls='ls --color=auto'
-alias ll='ls -hAlF'
-alias ..='cd ..'
-alias ...='cd ../..'
-alias ....='cd ../../..'
+alias ll='alias_ll'
 alias pls='sudo'
 alias please='sudo'
 alias fucking='sudo'
 
-# Shorten
+# Shorten / other software aliases
 alias pp="ncmpcpp"
+alias pm='pulsemixer'
+alias lx='eza -lm --icons --group-directories-first --octal-permissions'
+alias la='lx -all'
+alias lc='lx -all --context --extended --no-time'
+alias lg='lx -all --git --git-ignore --git-repos --no-user'
 
 # "Custom" commands / Stuff I can't remember so I write it down
 alias loop='for_loop'
 alias frequency='count_frequencies'
 alias filetypes='count_filetypes'
 alias scrape='scrape_url'
+alias ppath='echo "$PATH" | sed "s/:/\n/g"'
 
 # I have a hoarding problem
 alias bdfr='alias_bdfr'
@@ -29,7 +35,7 @@ alias gs-compress='alias_gs_compress'
 
 # Trash
 alias tt='trash-put'
-alias rm="prompt_and_repeat 'Maybe try using trash-put (tt)' rm"
+alias rm="prompt_and_repeat 'Maybe try using trash-put (tt)' rm -v"
 alias wreckmyeditor="tt ~/.cache/nvim ~/.config/nvim ~/.local/share/nvim \
 	~/.local/state/nvim"
 
@@ -38,12 +44,28 @@ alias sshperm='alias_sshperm'
 alias sshadd='ssh-add ~/.ssh/id_rsa'
 
 # Clean up $HOME
-alias wget='wget --hsts-file="$XDG_CACHE_HOME/wget-hsts"'
+alias wget='wget --hsts-file="$XDG_DATA_HOME/wget-hsts"'
+
+..() {
+	local count="${1:-1}"
+	local path="../"
+	while (( --count > 0 )); do
+		path="$path../"
+	done
+	cd -- "$path" || return
+}
+
+alias_ll() {
+	{
+		echo "PERMS LINKS OWNER GROUP SIZE MOD DAY TIME NAME"
+		ls -hAlF;
+	} | grep -v 'total [[:digit:]]' | column -t
+}
 
 prompt_and_repeat() {
-	# Created to be used as a way to learn new commands, 
+	# Created to be used as a way to learn new commands,
 	# but without making the old ones impossible to use.
-	# Prompt if the user really wants to do something, with: 
+	# Prompt if the user really wants to do something, with:
 	# - $1 being a message
 	# - $2 to $n being the something
 	if prompt_yn "Are you sure about this? $1"; then
@@ -122,7 +144,7 @@ scrape_url() {
 		echo "        doc = pdf,doc,docx,odt,html,ppt,pptx"
 		return
 	fi
-	
+
 	local accept
 
 	accept=''
@@ -142,10 +164,10 @@ alias_bdfr() {
 	mkdir -p "${bdfr_dir}"
  	local scheme
  	scheme=''
- 	if [ "$1" = 'download' ]; then
+ 	if [ "$1" = 'download' ] || [ "$1" = 'clone' ]; then
  	 	scheme="--file-scheme={UPVOTES}_{DATE}_{REDDITOR}_{TITLE}_{POSTID}"
  	fi
-	\bdfr "$1" "${bdfr_dir}" "${scheme}" "${@:2}"
+	\bdfr "$1" "${scheme}" "${@:2}" "${bdfr_dir}"
 	# This is actually including paths even in --help commands, which doesn't
 	# make sense, but it works in most cases. That's good enough for me.
 }

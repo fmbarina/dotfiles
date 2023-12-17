@@ -3,17 +3,23 @@
 
 # Me to zsh editing this: why can't you just be normal!?
 
-alias nvim-base="NVIM_APPNAME=nvim-base nvim"
+declare -A items
+items=(
+	['default']=''
+	['Base']='nvim-base'
+	['Multi']='nvim-multi'
+)
 
+# Create fast aliases
+for i in "${items[@]}"; do
+	[[ -z $i ]] && continue # skip default
+	eval "alias $i='NVIM_APPNAME=$i nvim'"
+done
+
+# If fzf not found, function won't work. Stop here.
 ! command -v fzf &>/dev/null && return
 
 function nvims() {
-	declare -A items
-	items=(
-		['default']=''
-		['Base']='nvim-base'
-	)
-
 	choices=
 	if [ -n "$ZSH_VERSION" ]; then
 		# shellcheck disable=SC2296
@@ -24,7 +30,7 @@ function nvims() {
 		choices=$(printf '%s\n' "${!items[@]}")
 	fi
 
-	config=$(echo "$choices" | fzf --prompt=' Neovim Config  ' \
+	config=$(echo "$choices" | fzf --prompt=' Neovim Config ≫ ' \
 		--height=~50% --layout=reverse --border --exit-0)
 
 	if [ -z "$config" ]; then

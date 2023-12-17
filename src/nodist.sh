@@ -5,37 +5,39 @@
 ### File interaction ###
 
 delete() {
-	! [ -e "$1" ] && log "[delete] File/dir does not exist: $1" && return 1
-	log "[delete] Deleting $1"
-	if command -v trash-put >/dev/null 2>&1 ; then 
-		trash-put "$1" 
-	else
-		rm -rf "$1"
+	if ! [ -e "$1" ] && ! [ -L "$1" ]; then
+		log "[delete] File/dir/link doesn't exist: $1" && return 1
 	fi
+
+	tool='rm -f'
+	if command -v trash-put &>/dev/null && ! [ -L "$1" ]; then
+		tool='trash-put'
+	fi
+
+	log "[delete] Removing $1 with $tool"
+	$tool $1
 }
 
 backup() {
-	# FIXME: causes problem when backing up same-name items
-	# Ex: .config/<softwareA>/config | .config/<softwareB>/config
-	
+	local filepath
+
 	if ! [ -e "$1" ]; then
 		log "[backup] Can not backup nonexistent target: $1"
 		abort "Could not backup nonexistent target: $1"
 	fi
 
-	if [ -e "$BKP_DIR/$(basename "$1")" ]; then
-		log "[backup] $1 already exists, stopped. Please remove or rename it."
-		abort "$1 was already backed up, stopped. Please remove or rename it."
-	fi
-
 	mkdir -p "$BKP_DIR"
 
-	# FIXME: shitballs fix this fuck
 	log "[backup] Backing up: $1"
-	mkdir -p "$(dirname "$(readlink -f "$1")")"
-	
-	cp -r  "$1" "$BKP_DIR$(dirname "$(readlink -f "$1")")" \
-		&& [ -z "$dotbkp" ] && dotbkp=yes
+	filepath=$(readlink -f "$1")
+	filepath=${filepath//\//%}
+
+	if [ -e "$BKP_DIR/$filepath" ]; then
+		log "[backup] $1 already exists, stopped. Please remove or rename it."
+		abort "A backup for $1 already exists. Please remove or rename it."
+	fi
+
+	cp -r  "$1" "$BKP_DIR/$filepath" && dotbkp=y
 }
 
 rsymlink() {
@@ -45,14 +47,17 @@ rsymlink() {
 }
 
 _symlink() {
-	local link
-	local tgt
-	
+	local link tgt
 	link="$1"
 	tgt="$2"
 
-	if [ -L "$link" ] && [ "$(rsymlink "$link")" == "$tgt" ]; then
-		log "[link] Already linked: $link" && return 0
+	if [ -L "$link" ]; then
+		if [ "$(rsymlink "$link")" == "$tgt" ]; then
+			log "[link] Already linked: $link" && return 0
+		else
+			log "[link] Found broken symbolic link: $link. Removing."
+			delete "$link"
+		fi
 	fi
 
 	if [ -e "$link" ]; then
@@ -61,7 +66,11 @@ _symlink() {
 	fi
 
 	# If at this point it exists, there has been a mistake
-	[ -e "$link" ] && return 1
+	if [ -e "$link" ] || [ -L "$link" ]; then
+		log "[link] Couldn't clear preexisting path!"
+		log "[link] Couldn't link $link to $tgt"
+		return 1
+	fi
 
 	log "[link] Creating link: $link To: $tgt"
 
@@ -77,7 +86,7 @@ symlink() {
 	# actual files will be symlinked, directories will be created if needed.
 	local link
 	local tgt
-	
+
 	link="$1"
 	tgt="$2"
 
@@ -85,7 +94,7 @@ symlink() {
 	if ! [ -d "$tgt" ]; then
 		_symlink "$link" "$tgt"; return $?
 	fi
-	
+
 	# Else go down directories recursively
 	log "[link] $tgt is a directory, descending."
 
@@ -106,14 +115,13 @@ check_has_service() {
 }
 
 xtr_tar() {
-	local compacted
-	local dest
+	local compacted dest
 	compacted="$1"
 	dest="$2"
 
 	log "[xtr_tar] Extracting $compacted to $dest"
 	tar --directory "$dest" \
-		--extract --overwrite --file "$compacted" 1>"$LOG_OTH_FILE"
+		--extract --overwrite --file "$compacted" >>"$log_file"
 }
 
 run_script() {
@@ -129,9 +137,7 @@ clean_initfile_name() {
 }
 
 remove_extension() {
-	local file_name
-	file_name="$(basename "$1")"
-	echo "${file_name%.*}"
+	echo "${1%.*}"
 }
 
 cd_and_back() {
@@ -186,7 +192,9 @@ pipx_base_install() {
 pipx_is_installed() {
 	log "[pipx] Checking if pipx package installed: $1"
 
-	if pipx list --short | grep "^$1 " &>/dev/null ; then
+	# I think pipx throwns an annoying error with a dumb emoji if there
+	# aren't any packages installed yet, so redirect that to null
+	if pipx list --short 2>/dev/null | grep "^$1 " &>/dev/null ; then
 		log "[pipx] $1 installed" ; return 0
 	else
 		log "[pipx] Could not find $1" ; return 1
@@ -211,7 +219,7 @@ git_clone() {
 	dest="$2"
 	args="$3"
 
-	if [ -e "$dest" ]; then
+	if [ -d "$dest" ] && [ -d "$dest/.git" ]; then
 		log "[git_clone] $dest already exists."
 		return 0
 	fi
@@ -237,7 +245,7 @@ get_de() {
 	else
 		denv=$XDG_CURRENT_DESKTOP
 	fi
-	
+
 	denv=${denv,,}  # convert to lower case
 	echo "$denv"
 }
@@ -323,6 +331,15 @@ rust_install() {
 	fi
 }
 
+ghcli_add() {
+	log "[$distro] Adding github-cli"
+	if _ghcli_add &>/dev/null; then
+		log "[$distro] Added github-cli"
+	else
+		log "[$distro] Could not add github-cli"
+	fi
+}
+
 ### Distro-specific functions ###
 
 # These themselves do little but log, the actual implementation per distro
@@ -369,13 +386,23 @@ pm_clean() {
 	if _pm_clean ; then
 		log "[$distro] Cleaned up packages" ; return 0
 	else
-		log "[$distro] Could not clean up packages" ; return 1	
+		log "[$distro] Could not clean up packages" ; return 1
 	fi
 }
 
 pm_is_installed() {
 	local package
 	package=$(bash "$DOTFILES/src/pkg/get_pkg.sh" "$1" "$distro")
+
+	# Will return true if ANY is installed, instead of ALL. Useful for removal.
+	if [ "$2" == '--any' ]; then
+		for sub in $package; do
+			if _pm_is_installed "$sub"; then
+				return 0
+			fi
+		done
+		return 1
+	fi
 
 	log "[$distro] Checking if package installed: $package"
 	if _pm_is_installed "$package"; then
@@ -388,7 +415,7 @@ pm_is_installed() {
 pm_install() {
 	local package
 	package=$(bash "$DOTFILES/src/pkg/get_pkg.sh" "$1" "$distro")
-	
+
 	log "[$distro] Installing $package"
 	if _pm_install "$package"; then
 		log "[$distro] Sucessfully installed $package" ; return 0
@@ -400,7 +427,7 @@ pm_install() {
 pm_remove() {
 	local package
 	package=$(bash "$DOTFILES/src/pkg/get_pkg.sh" "$1" "$distro")
-	
+
 	log "[$distro] Uninstalling $package"
 	if _pm_remove "$package"; then
 		log "[$distro] Sucessfully uninstalled $package" ; return 0
@@ -408,4 +435,3 @@ pm_remove() {
 		log "[$distro] Could not uninstall $package" ; return 1
 	fi
 }
-

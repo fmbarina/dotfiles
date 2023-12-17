@@ -1,14 +1,23 @@
 return {
   'akinsho/flutter-tools.nvim',
+  version = '^1',
   dependencies = {
     'nvim-lua/plenary.nvim',
     'stevearc/dressing.nvim', -- optional for vim.ui.select
+    'neovim/nvim-lspconfig',
   },
-  event = 'BufCreate *.dart',
+  event = { 'BufReadPre *.dart', 'BufNewFile *.dart' },
   config = function()
-    require('flutter-tools').setup{
+    local lsp = require('lsp-zero')
+    local dart_lsp = lsp.build_options('dartls', {})
+
+    require('flutter-tools').setup {
+      ui = {
+        -- border = '',
+        notification_style = 'plugin',
+      },
       widget_guides = {
-        enabled = true;
+        enabled = true,
       },
       closing_tags = {
         -- highlight = "ErrorMsg",
@@ -16,11 +25,12 @@ return {
         enabled = true
       },
       lsp = {
+        capabilities = dart_lsp.capabilities,
         color = { -- show the derived colours for dart variables
           enabled = true,
         },
         settings = {
-          lineLength = 10
+          enableSnippets = false,
         }
       }
     }

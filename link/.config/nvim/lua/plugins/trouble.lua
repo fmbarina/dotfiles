@@ -1,6 +1,8 @@
 return {
   'folke/trouble.nvim',
+  dev = true,
   dependencies = 'nvim-tree/nvim-web-devicons',
+  cmd = { 'TroubleToggle', 'Trouble' },
   keys = {
     {'<leader>xx', '<cmd>TroubleToggle<cr>', desc='Toggle trouble split'},
     {'<leader>xw', '<cmd>TroubleToggle workspace_diagnostics<cr>',
@@ -13,7 +15,6 @@ return {
     desc='Trouble lsp references'},
   },
   config = function()
-    require('trouble').setup {
-    }
+    require('trouble').setup()
   end
 }

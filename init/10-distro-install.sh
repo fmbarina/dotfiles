@@ -7,20 +7,22 @@
 pm_packages=(
 	7zip
 	bash
+	bat
 	bfs
 	bind-utils
 	btop
-	nvtop
 	clang-format
 	cloc
+	cmake # Many toolchains depend on cmake. You WILL use it, even if indirectly
 	cowsay
-	exa
+	curl
 	fd-find
-	ripgrep
 	ffmpeg
 	ffmpegthumbnailer
 	fzf
+	ghostscript
 	imagemagick
+	inotify-tools
 	jq
 	mpd
 	ncdu
@@ -28,12 +30,15 @@ pm_packages=(
 	neovim
 	netcat
 	npm # Just... just give up, you can't run from npm forever
+	nvtop
 	openssl
+	pandoc
 	perl
 	pkg-config
 	python3
 	python3-pip
 	radeontop
+	ripgrep
 	shellcheck
 	tmux
 	trash-cli
@@ -41,19 +46,16 @@ pm_packages=(
 	util-linux
 	valgrind
 	webp-pixbuf-loader
-	curl
 	wget
 	x264
-	zsh
 	zathura
 	zathura-extra
-	ghostscript
+	zsh
 	######
 	vlc
 	mpv
 	inkscape
 	gimp
-	blender
 	godot
 	firefox
 	qbittorrent
@@ -92,7 +94,7 @@ for pkg in "${pm_packages[@]}"; do
 
 	ern_arrow "Installing $pkg "
 	if exec_with_animation pm_install "$pkg" ; then
-		er_success "installed $pkg"
+		er_success "Installed $pkg"
 	else
 		er_error "$pkg could not be installed"
 	fi

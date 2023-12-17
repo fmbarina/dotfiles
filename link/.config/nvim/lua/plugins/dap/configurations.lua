@@ -30,6 +30,14 @@ local cppdbg = {
   },
 }
 
+local lua = {
+  {
+    type = 'nlua',
+    request = 'attach',
+    name = "Attach to running Neovim instance",
+  }
+}
+
 return {
   setup = function (dap)
     dap.configurations = {
@@ -37,6 +45,7 @@ return {
       c = cppdbg,
       cpp = cppdbg,
       rust = cppdbg,
+      lua = lua,
     }
   end
 }

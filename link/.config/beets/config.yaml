@@ -1,0 +1,12 @@
+directory: ~/Music/beet
+library: ~/.local/share/beets/musiclibrary.db
+import:
+  move: yes
+  group_albums: yes
+paths:
+  default: $albumartist/$album%aunique{}/$track $title
+  comp: Various/$album%aunique{}/$track $title
+  singleton: $artist/Singles/$title
+ui:
+  color: yes
+plugins: fetchart embedart lyrics lastgenre

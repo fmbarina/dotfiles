@@ -4,9 +4,10 @@
 ! command -v fzf &>/dev/null && echo 'fzf not found' && exit 101
 
 notes_dir="$(xdg-user-dir DOCUMENTS)/Notes"
-notes_fmt='md'
-notes_new='CREATE NEW NOTE'
-notes_del='DELETE EXISTING NOTE(s)'
+notes_fmt=${BNOTES_FILETYPE:-'md'}
+notes_new=${BNOTES_NEW:-'CREATE NEW NOTE'}
+notes_del=${BNOTES_DEL:-'DELETE EXISTING NOTE(s)'}
+notes_mov=${BNOTES_MOVE:-'RENAME EXISTING NOTE'}
 fzf_opts='--preview-window=right:75%:wrap'
 bat_opts='--style=numbers --color=always'
 
@@ -22,8 +23,7 @@ prompt_yn() {
 }
 
 clean() {
-	[ -f "$notes_new" ] && rm "$notes_new"
-	[ -f "$notes_del" ] && rm "$notes_del"
+	rm "$notes_new" "$notes_del" "$notes_mov"
 	cd - &>/dev/null || exit 2
 }
 
@@ -36,19 +36,18 @@ new_note() {
 	while [ -z "$note" ]; do
 		read -r -p 'Name of new note: ' note
 	done
-	touch "$notes_dir/$note.$notes_fmt" || exit 3
+	touch "$note.$notes_fmt" || exit 3
 	note="$note.$notes_fmt"
 }
 
 del_note() {
-	rm "$notes_new" "$notes_del"
+	rm "$notes_new" "$notes_del" "$notes_mov"
+	note=
 	local notes
 	mapfile -t notes < <(pick_note '' '-m')
 	[ -z "${notes[0]}" ] && return
-
 	printf '\nWill delete:\n'
 	for i in "${notes[@]}"; do echo "- $i" ; done
-
 	if prompt_yn 'Confirm deletion of note(s)?'; then
 		if command -v trash-put &>/dev/null ; then
 			trash-put "${notes[@]}" || exit 5
@@ -56,6 +55,18 @@ del_note() {
 			rm "${notes[@]}"
 		fi
 	fi
+}
+
+rename_note() {
+	rm "$notes_new" "$notes_del" "$notes_mov"
+	note="$(pick_note)"
+	[ -z "$note" ] && return
+	local new_name
+	while [ -z "$new_name" ]; do
+		read -r -p "New name for note ${note%.*}: " new_name
+	done
+	mv "$notes_dir/$note" "$notes_dir/$new_name.$notes_fmt"
+	note="$new_name"
 }
 
 pick_note() {
@@ -75,9 +86,10 @@ trap close INT
 
 note=$1
 while : ; do
-	touch "$notes_new" "$notes_del" | exit 3
+	touch "$notes_new" "$notes_del" "$notes_mov" | exit 3
 	note="$(pick_note "$note")"
 	[ "$note" == "$notes_del" ] && del_note && continue
+	[ "$note" == "$notes_mov" ] && rename_note && continue
 	[ "$note" == "$notes_new" ] && new_note
 	[ -n "$note" ] && "$VISUAL" "$note"
 	[ -z "$note" ] && break

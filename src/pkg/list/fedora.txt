@@ -3,6 +3,7 @@ amberol,
 avvie,
 baobab,baobab
 bash,bash
+bat,bat
 bfs,bfs
 bind-utils,bind-utils
 blender,blender
@@ -10,8 +11,10 @@ bottles,
 btop,btop
 cabextract,cabextract
 calibre,calibre
+cheese,cheese
 clang-format,clang-tools-extra
 cloc,cloc
+cmake,cmake
 cowsay,cowsay
 curl,curl
 czkawka,
@@ -31,24 +34,31 @@ firefox,firefox
 flatseal,
 foliate,foliate
 fzf,fzf
+g4music,
 ghostscript,ghostscript
 gimp,gimp
+github-cli,gh
 gnome-builder,gnome-builder
 gnome-extension-manager,
+gnome-tour,gnome-tour
 gnome-tweaks,gnome-tweaks
 godot,godot
+golang,golang
 handbrake,
+helvum,rust-helvum
 htop,htop
 identity,
 imagemagick,ImageMagick
 inkscape,inkscape
+inotify-tools,inotify-tools
 jq,jq
 kdenlive,kdenlive
 krita,krita
-libreoffice,libreoffice
+libreoffice,libreoffice libreoffice-core libreoffice-base
 logisim-evolution,
 lollypop,lollypop
 luajit,luajit
+luarocks,luarocks
 mpd,mpd
 mpv,mpv
 musl-gcc,musl-gcc
@@ -61,6 +71,7 @@ nvtop,nvtop
 obs-studio,
 obsidian,
 openssl,openssl
+pandoc,pandoc
 pdfarranger,pdfarranger
 perl,perl
 pkg-config,pkgconf-pkg-config
@@ -69,6 +80,8 @@ python3,python3
 python3-pip,python3-pip
 qbittorrent,qbittorrent
 radeontop,radeontop
+readline-dev,readline-devel
+rhythmbox,rhythmbox
 ripgrep,ripgrep
 rnote,
 ryujinx,
@@ -80,6 +93,7 @@ thunderbird,thunderbird
 tmux,tmux
 trash-cli,trash-cli
 unzip,unzip
+upscaler,
 util-linux,util-linux util-linux-user
 valgrind,valgrind
 videotrimmer,
@@ -88,6 +102,7 @@ webp-pixbuf-loader,webp-pixbuf-loader
 wget,wget
 x264,x264 x264-libs x264-devel
 xournalpp,xournalpp
+yelp,yelp
 yuzu,
 zathura,zathura
 zathura-extra,zathura-cb zathura-pdf-mupdf

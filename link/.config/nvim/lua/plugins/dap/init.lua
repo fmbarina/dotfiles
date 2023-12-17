@@ -1,7 +1,7 @@
 -- Big thanks to: github.com/harrisoncramer/nvim
 return {
   'rcarriga/nvim-dap-ui',
-  event = 'CursorHold',
+  event = {'BufReadPost', 'BufNewFile'},
   dependencies = {
     'mfussenegger/nvim-dap',
     -- nvim-dap-virtual-text
@@ -10,12 +10,10 @@ return {
     -- mason-nvim-dap
     'jay-babu/mason-nvim-dap.nvim',
     'williamboman/mason.nvim',
-    -- NOTE: lsp-zero not actually a dependency of mason-nvim-dap,
-    -- it's just here so that Mason is loaded and setup with it first.
-    -- A better setup might involve separating mason from lsp-zero.
-    'VonHeikemen/lsp-zero.nvim',
     -- lua-json5 (for launch.json reading)
-    {'Joakker/lua-json5', build = './install.sh'}
+    {'Joakker/lua-json5', build = './install.sh'},
+    -- languages
+    {'jbyuki/one-small-step-for-vimkind'},
   },
   config = function ()
     local dap = require'dap'

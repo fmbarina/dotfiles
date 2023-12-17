@@ -1,5 +1,17 @@
+# Dumb OS/Software stuff
 .DS_Store
 Thumbs.db
 *~
 .*.swp
+
+# Hopefully no need to commit these
 *.log
+*.env
+
+# These are meant for personal, repository specific stuff
+/my-notes.*
+/my-tests
+
+# Lua
+luacov.stats.out
+.luarc.json

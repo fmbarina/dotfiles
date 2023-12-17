@@ -56,4 +56,4 @@ Com newtab-aboutconfig, criar um arquivo ~/.mozilla/firefox/<perfil>/user.js
 
 Nele, basta incluir:
 
-user_pref("browser.newtab.url", "file:///home/fmbarina/.dotfiles/misc/firefox/startpage/index.html");
+user_pref("browser.newtab.url", "file:///home/fmbarina/.dot/misc/firefox/startpage/index.html");

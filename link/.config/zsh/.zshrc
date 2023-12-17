@@ -5,6 +5,10 @@
 # zsh does a lot of the work for us. Actually, the real order is more like:
 # /etc/X → ZDOTDIR/X, and so on, except logout. ZDOTDIR/.zlogout → /etc/zlogout
 
+# NOTE: maybe try out zinit? https://github.com/zdharma-continuum/zinit
+
+fpath=("$XDG_DATA_HOME/zsh/functions" $fpath)
+
 # Get module loader
 ZIM_HOME="${ZDOTDIR:-$HOME}/.zim"
 if [[ ! -e $ZIM_HOME/zimfw.zsh ]]; then
@@ -31,10 +35,16 @@ if [[ -s $HOME/.common/shell.sh ]]; then
 fi
 
 # Zsh specific stuff
-ZSH_EVALCACHE_DIR="${ZDOTDIR:-$HOME}/.zsh_evalcache"
-_evalcache _PIPENV_COMPLETE=zsh_source pipenv
 bindkey '^P' history-substring-search-up
 bindkey '^N' history-substring-search-down
+source "${LUVER_DIR}/self/luver.plugin.zsh"
+ZSH_EVALCACHE_DIR="${ZDOTDIR:-$HOME}/.zsh_evalcache"
+_evalcache _PIPENV_COMPLETE=zsh_source pipenv
+_evalcache pyenv init -
 
 # To customize prompt, run 'p10k configure' or edit $ZDOTDIR/.p10k.zsh
 source "$ZDOTDIR/.p10k.zsh"
+
+# Ew, ew, conda, messy, slow, fat, fuck
+# __conda_setup="$('/home/fmbarina/Desktop/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+# eval "$__conda_setup"

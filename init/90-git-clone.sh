@@ -16,7 +16,7 @@ mkdir -p "$repo_dir"
 
 for repo_url in "${git_repos[@]}"; do
 	repo_name="$(git_dirname_from_url "$repo_url")"
-	
+
 	en_arrow "Checking $repo_name"
 
 	if [ -d "$repo_dir"/"$repo_name" ] ; then

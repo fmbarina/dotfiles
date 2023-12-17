@@ -5,23 +5,27 @@
 # Var -------------------------------------------------------------------------
 
 flatpak_packages=(
-	libreoffice
+	blender
+	bottles
+	calibre
+	czkawka
+	discord
+	flatseal
+	gnome-builder
+	handbrake
+	helvum
 	kdenlive
 	krita
-	flatseal
-	obsidian
-	czkawka
-	handbrake
-	calibre
+	libreoffice
 	logisim-evolution
-	bottles
 	obs-studio
-	discord
+	obsidian
 	prism-launcher
 	ryujinx
-	yuzu
 	steam
 	thunderbird
+	upscaler
+	yuzu
 )
 
 # Run -------------------------------------------------------------------------
@@ -44,3 +48,16 @@ for pkg in "${flatpak_packages[@]}"; do
 		er_error "$pkg could not be installed"
 	fi
 done
+
+# For development
+if ! flatpak info 'org.flatpak.Builder' &>/dev/null ; then
+	en_arrow 'Installing org.flatpak.Builder'
+	if exec_with_animation flatpak install -y org.flatpak.Builder >/dev/null
+	then
+		er_success 'installed org.flatpak.Builder'
+	else
+		er_error 'org.flatpak.Builder could not be installed'
+	fi
+else
+	e_success '(already installed) org.flatpak.Builder'
+fi

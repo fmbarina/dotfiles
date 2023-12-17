@@ -1,9 +1,11 @@
 return {
   'akinsho/git-conflict.nvim',
-  version = "*",
+  version = "^1",
+  event = { "BufReadPre", "BufNewFile" },
   config = function ()
-    vim.cmd[[highlight GitConflictIncoming ctermbg=0 guibg=#1D2622]]
-    vim.cmd[[highlight GitConflictCurrent ctermbg=0 guibg=#283741]]
+    local hl = require('fmb.util').hl
+    hl('GitConflictIncoming', {bg = '#283741'})
+    hl('GitConflictCurrent', {bg = '#1D2622'})
 
     require('git-conflict').setup({
       highlights = {
@@ -13,4 +15,3 @@ return {
     })
   end
 }
-

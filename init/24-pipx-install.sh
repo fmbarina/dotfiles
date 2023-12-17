@@ -6,13 +6,16 @@
 # Var -------------------------------------------------------------------------
 
 pipx_packages=(
-	yt-dlp      # Video download tool
 	bdfr        # Reddit dowload tool
+	beets       # Swiss knife with the kitchen sink of music tools
+	black       # Python formatter
 	gallery-dl  # Gallery download tool
-	tldr        # For when man is excessive
 	pipenv      # Python virtualenv management
 	pulsemixer  # CLI and curses mixer for PulseAudio
+#	ranger-fm   # TUI file manager
+	tldr        # For when man is excessive
 	vermin      # Check python project version compatibility
+	yt-dlp      # Video download tool
 )
 
 # Run -------------------------------------------------------------------------
@@ -43,4 +46,3 @@ for pkg in "${pipx_packages[@]}"; do
 		er_error "$pkg could not be installed"
 	fi
 done
-

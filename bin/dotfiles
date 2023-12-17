@@ -4,9 +4,9 @@
 
 REPOURL="https://github.com/fmbarina/dotfiles.git" 
 
-[ -z "$DEV_HOME" ] && DEV_HOME="$(xdg-user-dir)/Dev"
+[ -z "$DEV_HOME" ] && DEV_HOME="$(xdg-user-dir)/Code"
 
-DOTFILES="$HOME/.dotfiles"
+DOTFILES="$HOME/.dot"
 LINK_DIR="$DOTFILES/link"
 COPY_DIR="$DOTFILES/copy"
 INIT_DIR="$DOTFILES/init"
@@ -240,8 +240,11 @@ shopt -s dotglob
 if [ "$(ls -A "$LINK_DIR")" ]; then
 	e_header "Symlinking"
 	for target in "$LINK_DIR"/*; do
-		symlink "$HOME/$(basename "$target")" "$target"
-		e_success "Symlinked $(basename "$target")"
+		if symlink "$HOME/$(basename "$target")" "$target"; then
+			e_success "Symlinked $(basename "$target")"
+		else
+			e_error "Could not symlink $(basename "$target")"
+		fi
 	done
 fi
 shopt -u dotglob
@@ -280,7 +283,7 @@ tput cnorm # Show cursor
 
 prompt_yn 'Reboot?' && sudo_do 'reboot'; echo ''; echo ''
 
-[ -n "$dotbkp" ] && echo "Check backed up file(s) in $DOTFILES/backup"
+[ -n "$dotbkp" ] && echo "NOTE: Check backed up file(s) in $DOTFILES/backup"
 
 if ! [ -e "$DOTFILES/installed" ]; then
 	echo ''

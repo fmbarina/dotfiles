@@ -6,12 +6,18 @@
 # Var -------------------------------------------------------------------------
 
 pip_packages=(
-	requests
-	numpy
-	autopep8
-	pyyaml
+	wheel
+	# ^ first because some installations need it
 	ao3_api
+	autopep8
+	numpy
+	pynvim
+	pyyaml
+	ranger-fm
+	requests
 )
+
+# ranger should be installed w/ pipx, but separation caused some issues before
 
 # Run -------------------------------------------------------------------------
 
@@ -32,4 +38,3 @@ for pkg in "${pip_packages[@]}"; do
 		er_error "$pkg could not be installed"
 	fi
 done
-

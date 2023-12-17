@@ -11,6 +11,11 @@ local function get_tab_title(tab_info)
   return tab_info.active_pane.title
 end
 
+wezterm.on('gui-startup', function(cmd)
+  local tab, pane, window = wezterm.mux.spawn_window(cmd or {})
+  window:gui_window():maximize()
+end)
+
 wezterm.on(
   'format-tab-title',
   function(tab, tabs, panes, config, hover, max_width)
@@ -47,7 +52,7 @@ wezterm.on(
 wezterm.on('update-status', function(window, pane)
   local effective = window:effective_config()
 
-  local format_item = {}
+  local format_item
   if effective.use_fancy_tab_bar then
     format_item = { Text = '' }
   else

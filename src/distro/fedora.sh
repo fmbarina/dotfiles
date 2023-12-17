@@ -12,8 +12,15 @@ _flatpak_enable() {
 		https://flathub.org/repo/flathub.flatpakrepo &> /dev/null
 }
 
+_ghcli_add() {
+	! command -v config-manager >/dev/null \
+		&& log "[fedora] config-manager not found. Can't add ghcli" \
+		&& return 1
+	sudo_do 'dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo'
+}
+
 _install_file() {
-	sudo_do "rpm -i $1"
+	sudo_do "rpm -i $*"
 }
 
 _pm_setup() {
@@ -28,7 +35,7 @@ _pm_update() {
 	# list of the updates will be printed, 0 if not and 1 if an
 	# error occurs.
 	# Source: dnf man page
-	dnf -q check-update 1>> /dev/null
+	dnf -q check-update >/dev/null
 	[ $? -eq 1 ] && return 1
 	return 0
 }
@@ -42,15 +49,15 @@ _pm_clean() {
 }
 
 _pm_is_installed() {
-	# shellcheck disable=SC2086
 	# We *need* items to be split if there are multiple
- 	rpm -q $1 &> /dev/null
+	# shellcheck disable=SC2068
+ 	rpm -q $@ &> /dev/null
 }
 
 _pm_install() {
-	sudo_do "dnf -y install $1"
+	sudo_do "dnf -y install $*"
 }
 
 _pm_remove() {
-	sudo_do "dnf -y remove $1"
+	sudo_do "dnf -y remove $*"
 }

@@ -22,4 +22,6 @@ if [[ -n $BASH_DIR && -d $BASH_DIR ]]; then
 	unset rc
 fi
 
+source "$LUVER_DIR/self/luver.bash"
 eval "$(_PIPENV_COMPLETE=bash_source pipenv)"
+eval "$(pyenv init -)"

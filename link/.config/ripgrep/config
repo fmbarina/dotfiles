@@ -1,0 +1,14 @@
+--smart-case
+
+# Don't vomit stupidly long lines
+--max-columns=150
+--max-columns-preview
+
+# Auto switch to PCRE when needed
+--auto-hybrid-regex
+
+--glob
+!*/.git/*
+
+--glob
+!{.git/*,.svn,.node_modules,.luarocks,lua_modules}

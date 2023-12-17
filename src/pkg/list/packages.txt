@@ -3,6 +3,7 @@ amberol
 avvie
 baobab
 bash
+bat
 bfs
 bind-utils
 blender
@@ -10,8 +11,10 @@ bottles
 btop
 cabextract
 calibre
+cheese
 clang-format
 cloc
+cmake
 cowsay
 curl
 czkawka
@@ -31,17 +34,23 @@ firefox
 flatseal
 foliate
 fzf
+g4music
 ghostscript
 gimp
+github-cli
 gnome-builder
 gnome-extension-manager
+gnome-tour
 gnome-tweaks
 godot
+golang
 handbrake
+helvum
 htop
 identity
 imagemagick
 inkscape
+inotify-tools
 jq
 kdenlive
 krita
@@ -49,6 +58,7 @@ libreoffice
 logisim-evolution
 lollypop
 luajit
+luarocks
 mpd
 mpv
 musl-gcc
@@ -61,6 +71,7 @@ nvtop
 obs-studio
 obsidian
 openssl
+pandoc
 pdfarranger
 perl
 pkg-config
@@ -69,6 +80,8 @@ python3
 python3-pip
 qbittorrent
 radeontop
+readline-dev
+rhythmbox
 ripgrep
 rnote
 ryujinx
@@ -80,6 +93,7 @@ thunderbird
 tmux
 trash-cli
 unzip
+upscaler
 util-linux
 valgrind
 videotrimmer
@@ -88,6 +102,7 @@ webp-pixbuf-loader
 wget
 x264
 xournalpp
+yelp
 yuzu
 zathura
 zathura-extra

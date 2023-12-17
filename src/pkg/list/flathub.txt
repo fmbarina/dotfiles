@@ -3,6 +3,7 @@ amberol,io.bassi.Amberol
 avvie,com.github.taiko2k.avvie
 baobab,org.gnome.baobab
 bash,
+bat,
 bfs,
 bind-utils,
 blender,org.blender.Blender
@@ -10,8 +11,10 @@ bottles,com.usebottles.bottles
 btop,
 cabextract,
 calibre,com.calibre_ebook.calibre
+cheese,
 clang-format,
 cloc,
+cmake,
 cowsay,
 curl,
 czkawka,com.github.qarmin.czkawka
@@ -31,17 +34,23 @@ firefox,org.mozilla.firefox
 flatseal,com.github.tchx84.Flatseal
 foliate,com.github.johnfactotum.Foliate
 fzf,
+g4music,com.github.neithern.g4music
 ghostscript,
 gimp,org.gimp.GIMP
+github-cli,
 gnome-builder,org.gnome.Builder
 gnome-extension-manager,com.mattjakeman.ExtensionManager
+gnome-tour,
 gnome-tweaks,
 godot,org.godotengine.Godot
+golang,
 handbrake,fr.handbrake.ghb
+helvum,org.pipewire.Helvum
 htop,
 identity,org.gnome.gitlab.YaLTeR.Identity
 imagemagick,
 inkscape,org.inkscape.Inkscape
+inotify-tools,
 jq,
 kdenlive,org.kde.kdenlive
 krita,org.kde.krita
@@ -49,6 +58,7 @@ libreoffice,org.libreoffice.LibreOffice
 logisim-evolution,com.github.reds.LogisimEvolution
 lollypop,org.gnome.Lollypop
 luajit,
+luarocks,
 mpd,
 mpv,io.mpv.Mpv
 musl-gcc,
@@ -61,6 +71,7 @@ nvtop,
 obs-studio,com.obsproject.Studio
 obsidian,md.obsidian.Obsidian
 openssl,
+pandoc,
 pdfarranger,com.github.jeromerobert.pdfarranger
 perl,
 pkg-config,
@@ -69,6 +80,8 @@ python3,
 python3-pip,
 qbittorrent,org.qbittorrent.qBittorrent
 radeontop,
+readline-dev,
+rhythmbox,
 ripgrep,
 rnote,com.github.flxzt.rnote
 ryujinx,org.ryujinx.Ryujinx
@@ -80,6 +93,7 @@ thunderbird,org.mozilla.Thunderbird
 tmux,
 trash-cli,
 unzip,
+upscaler,io.gitlab.theevilskeleton.Upscaler
 util-linux,
 valgrind,
 videotrimmer,org.gnome.gitlab.YaLTeR.VideoTrimmer
@@ -88,6 +102,7 @@ webp-pixbuf-loader,
 wget,
 x264,
 xournalpp,com.github.xournalpp.xournalpp
+yelp,
 yuzu,org.yuzu_emu.yuzu
 zathura,
 zathura-extra,

@@ -1,7 +1,5 @@
 -- Toggle floating terminal or create new one if there is none.
---
--- Author: kutsan, https://github.com/kutsan/
--- https://github.com/kutsan/dotfiles/blob/b2046a6c0bcc754fc381351119c14c374721fd4d/.config/nvim/lua/kutsan/mappings/normal/terminal.lua
+-- Original author: https://github.com/kutsan/dotfiles/
 
 local api = vim.api
 local fn = vim.fn

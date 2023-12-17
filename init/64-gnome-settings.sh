@@ -4,6 +4,8 @@
 
 # Made with 'gsettings list-recursively'
 
+gsettings set org.gnome.system.locale region 'pt_BR.UTF-8'
+
 # Clock menu
 gsettings set org.gnome.desktop.calendar show-weekdate true
 gsettings set org.gnome.desktop.interface clock-show-date false
@@ -27,13 +29,16 @@ gsettings set org.gnome.mutter dynamic-workspaces false
 gsettings set org.gnome.desktop.screensaver lock-delay 30
 gsettings set org.gnome.desktop.session idle-delay 900
 
+# Power
+gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-timeout 3600
+
 # Nautilus
-# FIXME: how do I set an array with gsettings?
-# gsettings set org.gnome.nautilus.icon-view captions ['size', 'none', 'none']
+gsettings set org.gnome.nautilus.icon-view captions "['size', 'none', 'none']"
 gsettings set org.gnome.nautilus.list-view use-tree-view true
-gsettings set org.gnome.nautilus.list-view use-tree-view true
+gsettings set org.gnome.nautilus.preferences show-create-link true
 gsettings set org.gnome.nautilus.preferences show-delete-permanently true
-gsettings set org.gtk.Settings.FileChooser sort-directories-first true # gtk what?
+gsettings set org.gtk.gtk4.Settings.FileChooser sort-directories-first true
+gsettings set org.gtk.Settings.FileChooser sort-directories-first true
 
 # Hope this helps
 gsettings set org.gnome.desktop.privacy report-technical-problems true

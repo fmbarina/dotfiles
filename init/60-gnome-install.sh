@@ -7,19 +7,19 @@
 gnome_distro_packages=(
 	baobab
 	foliate
-	easyeffects
-	gnome-builder
 )
 
 gnome_flatpak_packages=(
-    extension-manager
-	eyedropper
-	identity
-	videotrimmer
-	rnote
-	avvie
 	amberol
+	avvie
+	easyeffects
+	extension-manager
+	eyedropper
+	g4music
+	identity
 	lollypop
+	rnote
+	videotrimmer
 )
 
 # Run -------------------------------------------------------------------------
